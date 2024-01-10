@@ -1,0 +1,67 @@
+# Importing and Exporting Components
+
+কম্পোনেন্ট এর শক্তি হলো এটি একাধিক বার ব্যবহার করে কোডকে সংক্ষিপ্ত ও গোছালো রাখা যায়। কম্পোনেন্টগুলো অন্যান্য কম্পোনেন্টগুলোকে ধারণ করতে পারে। আমাদের অ্যাপে যত বেশি কম্পোনেন্ট ব্যবহার বাড়বে, সেগুলিকে বিভিন্ন ফাইলে বিভক্ত করে রাখা বুদ্ধিমানের কাজ। এতে কোড সহজে পাঠযোগ্য হবে এবং এই কম্পোনেন্টসমূহকে UI এর একাধিক স্থানে পুনরায় ব্যবহার করা যায়।
+
+**এই পাঠে আপনি যা শিখবেন:**
+
+- রুট কম্পোনেন্ট ফাইল কি
+- কীভাবে কম্পোনেন্টসমূহকে `import` ও `export` করতে হয়
+- কখন default এবং কখন named `import` ও `export` করতে হয়
+- কীভাবে একটি ফাইল থেকে একাধিক কম্পোনেন্ট import ও export করতে হয়
+- কীভাবে কম্পোনেন্টসমূহকে বিভিন্ন ফাইলে বিভক্ত করতে হয়
+
+**The root component file**
+
+সাধারণত React এ App.js **root component file** টি ফাইলটি থাকে। React এ একটি মাত্র রুট কম্পোনেট থাকে। কিন্ত Next.js এ প্রত্যেক পেজের জন্য রুট কম্পোনেন্ট থাকে। রিঅ্যাক্ট সিংগেল পেজ এপ্লিকেশন। নেক্সট জে এস মাল্টি পেজ এপ্লিকেশন।
+
+```javascript
+function Profile() {
+  return <img src="https://i.imgur.com/MK3eW3As.jpg" alt="Katherine Johnson" />;
+}
+
+export default function Gallery() {
+  return (
+    <section>
+      <h1>Amazing scientists</h1>
+      <Profile />
+      <Profile />
+      <Profile />
+    </section>
+  );
+}
+```
+
+আমরা **[first component section](https://prothomalo.com)** এ দেখেছি রুট কম্পোনেটটি `Gallery` কম্পোনেন্টকে রেন্ডার করে।
+
+**Exporting and importing a component**
+
+আমরা একটি ফাইল থেকে একাধিক কম্পোনেন্ট `export` করতে পারি। কিন্তু শুধুমাত্র একটি ডিফল্ট কম্পোনেন্টকে `export` করতে পারি।
+
+- শুধু কম্পোনেন্টকে `export` করাকে বলে **named export**
+- default component কে `export` করাকে বলে **default export**
+
+> A file can have no more than one default export, but it can have as many named exports as you like.
+
+**Here's a table summarizing the syntax for default and named exports and imports in React:**
+
+| Feature        | Syntax                                  | Description                                                  |
+| -------------- | --------------------------------------- | ------------------------------------------------------------ |
+| Default export | `export default function Button() {}`   | Exports a single component as the main export from a file.   |
+| Default import | `import Button from './Button.js';`     | Imports the default export from a file.                      |
+| Named export   | `export function Button() {}`           | Exports multiple components from a file using named exports. |
+| Named import   | `import { Button } from './Button.js';` | Imports specific named exports from a file.                  |
+
+**Additional notes:**
+
+- A file can have only one default export.
+- A file can have multiple named exports.
+- You can combine default and named exports in the same file.
+- You can import multiple named exports from a file using a single import statement.
+- It's generally recommended to use named exports for better code organization and maintainability.
+
+আমরা যখন import করি তখন আমরা কম্পোনেন্টকে অন্যনামেও ধরে ব্যবহার করতে পারি।
+
+1. এক্সপোর্ট কম্পোনেন্ট এর বেলায় `import Btn from './Button.js';
+2. named component এর বেলায় (`import { Button as Btn} from './Button.js';`))
+
+   `

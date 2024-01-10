@@ -1,23 +1,5 @@
-# Nextra Docs Template 
+# React Bangla Tutorial
 
-This is a template for creating documentation with [Nextra](https://nextra.site).
+React UI বানানোর কাজটাকে সহজ করে দিয়েছে। React এ JSX ব্যবহার করে আমরা খুব সহজে কন্টেন ও লজিক নিয়ে একসাথে কাজ করতে পারি। React কম্পোনেন্ট এর মাধ্যমে আমরা ওয়েবসাইটের ছোট ছোট পার্ট তৈরি করি। কম্পোনেন্টগুলো দেখতে একই থাকে, কিন্তু তাদের মধ্যে আমরা ডায়নামিক ভেলু পাস করি।
 
-[**Live Demo →**](https://nextra-docs-template.vercel.app)
-
-[![](.github/screenshot.png)](https://nextra-docs-template.vercel.app)
-
-## Quick Start
-
-Click the button to clone this repository and deploy it on Vercel:
-
-[![](https://vercel.com/button)](https://vercel.com/new/clone?s=https%3A%2F%2Fgithub.com%2Fshuding%2Fnextra-docs-template&showOptionalTeamCreation=false)
-
-## Local Development
-
-First, run `pnpm i` to install the dependencies.
-
-Then, run `pnpm dev` to start the development server and visit localhost:3000.
-
-## License
-
-This project is licensed under the MIT License.
+[**Live Demo →**](https://react-bangla-tutorial-98fc.vercel.app/)

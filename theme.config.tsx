@@ -2,7 +2,6 @@ import { useRouter } from "next/router";
 import { DocsThemeConfig } from "nextra-theme-docs";
 
 const config: DocsThemeConfig = {
-  title: "React Bangla Tutorial",
   logo: <span>React Bangla Tutorial</span>,
   project: {
     link: "https://github.com/codebymojnu/react-bangla-tutorial",

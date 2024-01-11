@@ -1,8 +1,10 @@
 # Rendering Lists
 
-যখন বার বার একই রকম ui দেখতে হবে, কম্পোনেন্ট এ বার বার আলাদা করে ডাটা না পাঠিয়ে আমরা জাভাস্ক্রিপ্টের অ্যারে মেথড `map()` ব্যবহার করে কম্পোনেন্ট এ ওয়ান বাই ওয়ান ডাটা পাস করতে পারি। ফলে কম্পোনেন্ট অব অ্যারে হয়ে যাবে। যখন ui দেখতে একই শুধু ডাটাগুলো তখন আমরা এই টেকনিক ব্যবহার করব।
+যখন বার বার একই রকম ui দেখতে পারবো কিন্তু শুধু ডাটা গুলো ভিন্ন হবে, তখন আমরা অনেক কম্পোনেন্ট এ আলাদা আলাদা করে ডাটা না পাঠিয়ে আমরা জাভাস্ক্রিপ্টের অ্যারে মেথড `map()` ব্যবহার করে কম্পোনেন্ট একবারে পাঠিয়ে দিলে আমাদের ui ওয়ান বাই ওয়ান রেন্ডার হতে থাকবে। কম্পোনেন্টগুলোরই অ্যারে হয়ে যাবে।
 
-> এই লেখায় শিখবেন:
+> যখন ui দেখতে একই শুধু ডাটাগুলো তখন আমরা এই টেকনিক ব্যবহার করব।
+
+**এই লেখায় শিখবেন:**
 
 - কিভাবে অ্যারে থেকে JavaScript-এর `map()` ব্যবহার ওয়ান বাই ওয়ান কম্পোনেন্ট এ ডাটা পাঠিয়ে কম্পোনেন্ট রেন্ডার করা যায়
 - নির্দিষ্ট ডাটা দেখাতে JavaScript-এর `filter()` ব্যবহার
@@ -54,16 +56,61 @@ return <ul>{listItems}</ul>;
 **ফাইনাল কোড**
 
 ```jsx
-const people = [
-  "Creola Katherine Johnson: mathematician",
-  "Mario José Molina-Pasquel Henríquez: chemist",
-  "Mohammad Abdus Salam: physicist",
-  "Percy Lavon Julian: chemist",
-  "Subrahmanyan Chandrasekhar: astrophysicist",
+const peoples = [
+  "Monju: housewife",
+  "Sumit Saha: instructor",
+  "Jhankar Mahbub: instructor",
+  "Anisul Islam: teacher",
+  "Mojnu: student",
+  "Arsadul: mathematician",
 ];
 
 export default function List() {
-  const listItems = people.map((person) => <li>{person}</li>);
-  return <ul>{listItems}</ul>;
+  const peopleList = peoples.map((person) => <li>{person}</li>);
+  return <ul>{peopleList}</ul>;
 }
 ```
+
+## Filtering Arrays of items
+
+ডাটা বিভিন্নভাবে সাজানো থাকতে পারে। array এর ভিতরে object, object এর ভিতরে array, আবার সেই array এর ভিতরে object.
+
+```js
+const artists = [
+  {
+    name: "Manna",
+    id: 1,
+    role: "nayok",
+  },
+  {
+    name: "Sabnur",
+    id: 2,
+    role: "nayika",
+  },
+  {
+    name: "Mousumi",
+    id: 3,
+    role: "nayika",
+  },
+  {
+    name: "Purnima",
+    id: 4,
+    role: "nayika",
+  },
+  {
+    name: "Rajib",
+    id: 5,
+    role: "harami",
+  },
+];
+```
+
+মনে করুন, আপনি শুধু নায়িকাদের নাম ui তে দেখাবেন। তাহলে আমরা জাভাস্ক্রিপ্টএর `filter()` method ব্যবহার করে শুধু নায়িকাদের নামের লিস্ট`(array of nayika names)` পাবো।
+
+1. এই array থেকে শুধু নায়িকাদের নাম ফিল্টার করে নতুন একটি array`nayikaList` তে রাখব। ফিল্টারিং কন্ডিশন `artist.role === 'nayika'`
+
+```js
+const nayikaList = artists.filter((artist) => artist.role === "nayika");
+```
+
+> এখন উপরে আমরা যেভাবে array কে map করে যেভাবে ui তে অনেকগুলো নামের লিস্ট দেখাইছি। ঠিক এই ভাবে আমরা নায়িকাদের লিস্ট ui তে দেখাবো।

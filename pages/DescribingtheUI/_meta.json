@@ -3,5 +3,7 @@
   "importing&exportingComponent": "Importing and Exporting Component",
   "writtingmarkupwithjsx": "Writting Mark up with JSX",
   "javascriptinjsxusingcurlybrackets": "Javascript in JSX using curly brackets",
-  "passingpropstoacomponent": "Passing Props to a component"
+  "passingpropstoacomponent": "Passing Props to a component",
+  "conditionalrendering": "Conditional Rendering",
+  "renderinglists": "Rendering Lists"
 }

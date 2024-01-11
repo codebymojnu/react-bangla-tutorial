@@ -1,0 +1,69 @@
+# Rendering Lists
+
+যখন বার বার একই রকম ui দেখতে হবে, কম্পোনেন্ট এ বার বার আলাদা করে ডাটা না পাঠিয়ে আমরা জাভাস্ক্রিপ্টের অ্যারে মেথড `map()` ব্যবহার করে কম্পোনেন্ট এ ওয়ান বাই ওয়ান ডাটা পাস করতে পারি। ফলে কম্পোনেন্ট অব অ্যারে হয়ে যাবে। যখন ui দেখতে একই শুধু ডাটাগুলো তখন আমরা এই টেকনিক ব্যবহার করব।
+
+> এই লেখায় শিখবেন:
+
+- কিভাবে অ্যারে থেকে JavaScript-এর `map()` ব্যবহার ওয়ান বাই ওয়ান কম্পোনেন্ট এ ডাটা পাঠিয়ে কম্পোনেন্ট রেন্ডার করা যায়
+- নির্দিষ্ট ডাটা দেখাতে JavaScript-এর `filter()` ব্যবহার
+- React keys কখন লাগে আর কেন লাগে
+
+## Rendering Data From Arrays
+
+ধরুন আপনার কাছে কিছু ব্যাক্তির নামের লিস্ট আছে।
+
+```html
+<ul>
+  <li>Creola Katherine Johnson: mathematician</li>
+  <li>Mario José Molina-Pasquel Henríquez: chemist</li>
+  <li>Mohammad Abdus Salam: physicist</li>
+  <li>Percy Lavon Julian: chemist</li>
+  <li>Subrahmanyan Chandrasekhar: astrophysicist</li>
+</ul>
+```
+
+উপরের লিস্ট আইটেম গুলোর মধ্যে শুধু পার্থক্য হচ্ছে তাদের কন্টেনগুলো মানে তাদের নামের ভেলু গুলো। যখন আমরা UI তৈরি করব কম্পোনেন্ট দিয়ে তখন আমাদের অনেকগুলো কম্পোনেন্টের মধ্য দিয়ে ভিন্ন ভিন্ন ডাটা পাঠাতে হবে। এই সিচুয়েশনে আমরা javascript এর `array of objects` এ ডাটা স্টোর করে `map()` আর `filter()` একসাথে অনেকগুলো কম্পোনেন্ট বানানো যায়। কিন্তু ডাটাগুলো ভিন্ন হবে।
+
+আপনি এই ভাবে অনেকগুলো নামের লিস্ট array তে রেখে, একসাথে অনেক কম্পোনেট এ রেন্ডার করতে পারেন।
+
+1. অনেক মানুষের নামের array বানান
+
+```js
+const peoples = [
+  "Monju: housewife",
+  "Sumit Saha: instructor",
+  "Jhankar Mahbub: instructor",
+  "Anisul Islam: teacher",
+  "Mojnu: student",
+  "Arsadul: mathematician",
+];
+```
+
+2. নামের array কে map করুন, লিস্ট আইটেমে ভেলু পাঠান
+
+```js
+const peopleList = peoples.map((people) => <li>{people}</li>);
+```
+
+3. return peopleList from your component wrapped in `<ul>`:
+
+```jsx
+return <ul>{listItems}</ul>;
+```
+
+**ফাইনাল কোড**
+
+```jsx
+const people = [
+  "Creola Katherine Johnson: mathematician",
+  "Mario José Molina-Pasquel Henríquez: chemist",
+  "Mohammad Abdus Salam: physicist",
+  "Percy Lavon Julian: chemist",
+  "Subrahmanyan Chandrasekhar: astrophysicist",
+];
+
+export default function List() {
+  const listItems = people.map((person) => <li>{person}</li>);
+  return <ul>{listItems}</ul>;
+}
+```

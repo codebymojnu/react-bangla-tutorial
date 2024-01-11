@@ -36,14 +36,10 @@ const config: DocsThemeConfig = {
           property="og:url"
           content={`https://react-bangla.vercel.app${asPath}`}
         />
-        <meta name="theme-color" content="#ff3d00" />
-        <meta property="og:site_name" content="React Bangla" />
+        <meta property="og:site_name" content="React Bangla Tutorial" />
         <meta name="og:title" content="React Bangla Tutorial" />
-        <meta httpEquiv="Content-Language" content="en" />
+        <meta httpEquiv="Content-Language" content="bn" />
         <meta name="viewport" content="width=device-width" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <link rel="icon" type="image/png" href="/Images/favicon/favicon.png" />
-        <link rel="manifest" href="/site.webmanifest" />
         <meta name="keywords" content="React, Bangla, Tutorial" />
         <meta
           property="description"

@@ -5,5 +5,6 @@
   "javascriptinjsxusingcurlybrackets": "Javascript in JSX using curly brackets",
   "passingpropstoacomponent": "Passing Props to a component",
   "conditionalrendering": "Conditional Rendering",
-  "renderinglists": "Rendering Lists"
+  "renderinglists": "Rendering Lists",
+  "keepingcomponentspusr": "Keeping Components Pure"
 }

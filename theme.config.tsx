@@ -45,14 +45,14 @@ const config: DocsThemeConfig = {
           property="description"
           content={
             meta.description ||
-            "React Bangla Tutorial অনুসরণ করে রিয়েক্ট শিখুন."
+            "React Bangla Tutorial স্টেপ বাই স্টেপ ফলো করে রিয়েক্ট শিখুন."
           }
         />
         <meta
           property="og:description"
           content={
             meta.description ||
-            "React Bangla Tutorial অনুসরণ করে রিয়েক্ট শিখুন."
+            "React Bangla Tutorial স্টেপ বাই স্টেপ ফলো করে রিয়েক্ট শিখুন."
           }
         />
       </>

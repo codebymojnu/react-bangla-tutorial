@@ -9,7 +9,8 @@ const config: DocsThemeConfig = {
   chat: {
     link: "https://discord.com/mojnu13",
   },
-  docsRepositoryBase: "https://github.com/codebymojnu/react-bangla-tutorial",
+  docsRepositoryBase:
+    "https://github.com/codebymojnu/react-bangla-tutorial/blob/main",
   footer: {
     text: "React Bangla Tutorial",
   },

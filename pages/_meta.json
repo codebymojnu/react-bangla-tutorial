@@ -1,6 +1,8 @@
 {
   "index": "Introduction",
   "DescribingtheUI": "Describing the UI",
+  "AddingInteractivity": "Adding Interactivity",
+  "ManagingState": "Managing State",
   "about": {
     "title": "About",
     "type": "page"

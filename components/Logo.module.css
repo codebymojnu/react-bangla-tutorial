@@ -1,18 +1,7 @@
 .logo_container {
-  padding : 6px;
-  background-color: white;
-  color: black;
-  border-radius: 5px;
-  font-weight: bold;
 }
 .logo_first_letter {
   /**/
 }
 .logo_second_letter {
-  margin-left: 6px;
-  margin-right: 6px;
-  background-color: black;
-  border-radius: 5px;
-  color: white;
-  padding: 6px;
 }

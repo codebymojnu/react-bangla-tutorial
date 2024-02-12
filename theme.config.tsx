@@ -1,8 +1,10 @@
 import { useRouter } from "next/router";
 import { DocsThemeConfig, useConfig } from "nextra-theme-docs";
+import Logo from "./components/Logo"
+
 
 const config: DocsThemeConfig = {
-  logo: <span>React Bangla Tutorial</span>,
+  logo: <Logo />,
   project: {
     link: "https://github.com/codebymojnu/react-bangla-tutorial",
   },

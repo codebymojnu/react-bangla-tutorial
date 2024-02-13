@@ -1,0 +1,48 @@
+# Built-in React hooks
+
+ReactJS এ Hook হলো বহুল ব্যবহৃত এবং গুরুত্বপূর্ণ  একটি  অংশ । 
+Hook ব্যবহার করে React Components থেকে/এর বিভিন্ন  features  ব্যবহার করতে পারব । 
+বিষয়টি প্রথমে কঠিন মনে হলেও তা এতটা কঠিন নয়। 
+
+> আমরা নিশ্চয় React component কিভাবে বানাতে হয় তা জানি। এই Component কে আলাদা ফাইল এ বানালে তা হয়ে যায় Reusable component। ঠিক তেমনি শুধুমাত্র javascript কোড কে আলাদা ফাইল এ রেখে reusable করতে পারলে সেটা হয়ে যায় React Hook(React custom hook)। 
+
+
+###### React component / Reusable React component
+``` javascript
+import React from "react"
+const Button = ({text}) => {
+  return(
+    <button className="beautiful-button">{text}</button>
+    )
+}
+export default Button;
+```
+
+###### React hook / Custom Hook
+``` javascript
+const useSum = (a,b) => {
+  return a + b
+}
+export default useSum;
+```
+
+উপরের উদাহরণটিতে আমরা একটি Custom Hook বানিয়েছি। ঠিক তেমনি বিভিন্ন কাজে আমাদের Hook ব্যবহার করতে হবে।
+React আমাদেরকে কিছু default Built-in hook দিয়েছে যা আমাদের প্রতিদিনের কাজকে অনেক সহজ করে দেয়। 
+
+> প্রতিটি hook এর concept একই কিন্তু তাদের ব্যবহার ও কাজের ধরন ভিন্ন। প্রতিটি Hook মুলত একটি Reusable Javascript Function।  যে Function গুলো parameter হিসেবে কখনো number,string,boolean আবার কখনো Function নিয়ে থাকে এবং একটা value return করে আর সে value হতে পারে number অথবা string অথবা Array অথবা boolean অথবা Function  ।  
+
+
+###### simple usees of useState hook
+``` javascript 
+import { useState } from 'react';
+const [value, setValue] = useState(0)
+```
+
+এখন আমরা React এর কিছু Built-in Hook নিয়ে আলোচনা করব। 
+
+
+1. useState 
+2. useEffect 
+3. useLayoutEffect
+4. useCallback 
+and many more

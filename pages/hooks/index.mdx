@@ -1,0 +1,126 @@
+## Built-in React Hooks
+
+Hook আমাদেরকে React component থেকে বিভিন্ন features  ব্যবহার করতে সাহায্য করে। আমরা চাইলে React এর built-in hook ব্যবহার করতে পারি অথবা এই built-in hook ব্যবহার করে নিজেরা custom hook বানাতে পারি। এই পেজটিতে built-in hook গুলোর তালিকা দেওয়া হলো। 
+
+
+## State Hooks
+
+State আমাদেরকে React component এ user input এর মতো তথ্য মনে রাখতে সাহায্য করে। যেমন একটি ফর্ম component state ব্যবহার করে ইনপুটগুলোর value সংরক্ষণ করতে পারে অন্যদিকে একাটি image gallery component state ব্যবহার করে selected image এর index টা সংরক্ষণ করতে পারে। 
+
+Component এ state ব্যবহার করতে চাইলে নিচের যেকোনো একটি hook ব্যবহার করতে পারেন :
++ [useState](usestate) একটি state declare করুন যে সরাসরি  state আপডেট করতে পারে। 
++ [useReducer](usereducer) state declare করার পর এর আপডেট করার লজিকগুলো reducer function এর ভিতর লিখতে হয়। 
+
+``` javascript
+function ImageGallery() {
+  const [index, setIndex] = useState(0);
+  // ...
+```
+
+## Context Hooks
+
+Context অনেক দূরের parents component থেকে props পাঠানো ছাড়াই তথ্য পেতে সাহায্য করে।  উদাহরণস্বরূপ, আপনার অ্যাপের শীর্ষ-স্তরের কম্পোনেন্ট যেকোনো গভীরতার কম্পোনেন্টগুলিতে বর্তমান UI-theme থীমটি পাঠাতে পারে। ফলে আমাদেরকে প্রত্যেক component এ props পাঠাতে হবে না। 
+
++ [useContext](#useContext) "একটি কনটেক্সট পড়ে এবং সাবস্ক্রাইব করে।"
+
+``` javascript 
+function Button() {
+  const theme = useContext(ThemeContext);
+  // ...
+```
+
+## Ref Hooks
+
+Refs একটি component কে কিছু তথ্য ধরে রাখতে সাহায্য করে যা rendering এর জন্য কাজ করে না যেমন DOM node অথবা একটি timeout ID। এটি state এর মত নয়। রেফ এর value update করলে তা component কে re-render করে না।Refs হলো রিয়েক্ট প্যারাডাইম থেকে পাল্টা বা বাহিরে প্রাপ্তির মাধ্যম। non-react system যেমন built-in browser APIs নিয়ে কাজ করতে দরকার পরে। 
+
++ [useRef](#useref) একটি ref declare করে। এতে আপনি যেকোনো মান ধারণ করতে পারেন, তবে সাধারণত এটি একটি DOM node ধারণ করার জন্য ব্যবহৃত হয়।
+
++ [useImperativeHandle](#useImperativeHandle) আপনার কম্পোনেন্ট দ্বারা উদ্ধৃত ref কাস্টমাইজ করতে দেয়। এটি এত ব্যবহৃত হয় না।
+
+
+
+##  Effect Hooks
+
+
+Effects কোম্পোনেন্টকে বাহ্যিক সিস্টেমের সাথে সংযোগ করে এবং (synchronize)সমকলন করে দেয়। এগুলোর মধ্যে রয়েছে network, browser DOM, animations, widgets written using a different UI library, and other non-React code। 
+
++ [useEffect](#useEffect) বাহ্যিক সিস্টেমের সাথে component কে সংযুক্ত করে। 
+
+``` javascript
+function ChatRoom({ roomId }) {
+  useEffect(() => {
+    const connection = createConnection(roomId);
+    connection.connect();
+    return () => connection.disconnect();
+  }, [roomId]);
+  // ...
+```
+
+
+Effects হলো রিয়েক্ট প্যারাডাইম থেকে পাল্টা বা বাহিরে প্রাপ্তির মাধ্যম। আপনার অ্যাপ্লিকেশনের ডেটা ফ্লো অর্কেস্ট্রেশনের জন্য Effects ব্যবহার করবেন না। যদি আপনি একটি বাহ্যিক সিস্টেমের সাথে ইন্টারেক্ট না করেন, তবে আপনার একটি Effect এর প্রয়োজন হতে পারে না।
+
+খুবই কম ব্যবহৃত দুটি hook :
+
++ [useLayoutEffect](#useLayoutEffect): এটি ব্রাউজার পুনরায় স্ক্রিনটি পুনরায় রঙিং হওয়ার আগে ফায়ার করে। আপনি এখানে লেআউট মাপতে পারেন।
+
++ [useInsertionEffect](#useInsertionEffect): এটি রিয়েক্ট ডমে পরিবর্তন করার আগে ফায়ার করে। লাইব্রেরিগুলি এখানে ডায়নামিক CSS প্রবেশ করতে পারে।
+
+
+## Performance Hooks
+
+রি-রেন্ডারিং পারফর্মেন্স অপটিমাইজ করার একটি সাধারণ উপায় হ'ল অপ্রয়োজনীয় কাজ skip করা। উদাহরণস্বরূপ, আপনি রিয়েক্টকে বলতে পারেন পূর্বের cached calculation ব্যবহার করতে  অথবা পূনরায়  re-render না করতে যদি আগের রেন্ডার করার পর থেকে ডেটা পরিবর্তন না হয়ে থাকে।
+
+
+পূনরায় calculations এবং অপ্রয়োজনীয় re-rendering বন্ধ করার জন্য নিচের যেকোনো একটি Hook ব্যবহার করা যেতে পারে :
+
++ [useMemo](#usememo) একটি expensive calculation এর result cache করতে সাহায্য করে। 
+
++ [useCallback](#useCallback) এটি আপনাকে একটি অপটিমাইজড কম্পোনেন্টে পাঠানোর আগে একটি ফাংশন ডেফিনিশন ক্যাশ করতে দেয়।
+
+``` javascript
+function TodoList({ todos, tab, theme }) {
+  const visibleTodos = useMemo(() => filterTodos(todos, tab), [todos, tab]);
+  // ...
+}
+```
+
+কখনও কখনও, আপনি রি-রেন্ডারিং কে skip করতে পারবেন না কারণ (comouter screen)স্ক্রিনটি করে আপডেট করা প্রয়োজন হয়। ঐ ক্ষেত্রে, আপনি পারফর্মেন্স উন্নত করতে পারেন যেখানে (blocking)ব্লকিং আপডেটগুলি আছে যেগুলি synchronous হতে হবে সেগুলোকে আলাদা করে  (যেমন, ইনপুটে টাইপ করা) এবং নন-ব্লকিং আপডেটগুলি যেগুলি ব্যবহারকারী ইন্টারফেস ব্লক করে না (যেমন, চার্ট আপডেট করা)।
+
+Components কে rendering এর সময় প্রাধান্য দিতে নিচের যেকোনো একটি hook  ব্যবহার করুন :
+
++ [useTransition](#useTransition) lets you mark a state transition as non-blocking and allow other updates to interrupt it.
+
++ [useDeferredValue](#useDeferredValue) lets you defer updating a non-critical part of the UI and let other parts update first.
+
+## Resource Hooks
+
+Resources একটি conponent এর state না হওয়া সত্ত্বেও তাকে access করা সম্ভব। যেমন একটি component চাইলে প্রমিস(Promise) অথবা context থেকে styling information গুলো পড়তে পারবে। 
+
+
+Resources থেকে value গুলোকে পড়তে চাইলে নিচের hook ব্যবহার করতে হবে :
+
++ [use](#use) Promise অথবা context এর মতো resources থেকে value পেতে সাহায্য করে। 
+
+``` javascript 
+function MessageComponent({ messagePromise }) {
+  const message = use(messagePromise);
+  const theme = use(ThemeContext);
+  // ...
+}
+```
+
+
+## Other Hooks
+
+এই hook গুলো মূলত react এর বিভিন্ন library author দের জন্য প্রয়োজনীয়। সাধারণত React প্রজেক্টগুলোতে এই হুকগুলু দরকার পরে না। 
+
++ [useDebugValue](#useDebugValue) React DevTools যে লেবেল প্রদর্শন করে সেটা কাস্টমাইজ করার সুযোগ দেয়।
+
++ [useId](#useId) একটি unique ID জেনেরেট করে তা return করে। 
+
++ [useSyncExternalStore](#useSyncExternalStore) Component কে বাহ্যিক কোন store এর সাথে সংযুক্ত করে। 
+
+
+## Your own Hooks
+
+আপনি চাইলে javascript function হিসাবে custom hook ডিফাইন করতে পারেন। 

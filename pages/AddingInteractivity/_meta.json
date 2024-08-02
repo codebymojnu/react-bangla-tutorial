@@ -1,3 +1,6 @@
 {
-  "RespondingToEvents": "Responding To Events"
+  "RespondingToEvents": "Responding To Events",
+  "State.a.componentMemory": "State: A Component Memory",
+  "How.State.Works.Deep.Drive": "How Sate Works: A Deep Drive",
+  "RenderAndCommit": "React Render and Commit"
 }

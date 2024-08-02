@@ -14,7 +14,7 @@
 
 props হলো JSX ট্যাগের মধ্যে তথ্য পাস করা। উদাহরণস্বরূপ, `className` `src` `height` `width` কিছু `props` যেটা আমরা img ট্যাগের মধ্যে পাস করি।
 
-````jsx
+```jsx
 function Avatar() {
   return (
     <img
@@ -29,9 +29,7 @@ function Avatar() {
 
 export default function Profile() {
   return <Avatar />;
-}```
+}
+```
 
 > `<img>` ট্যাগে প্রপ পাঠানোর ক্ষেত্রে কিছু নির্দিষ্ট সীমাবদ্ধতা রয়েছে (ReactDOM HTML স্ট্যান্ডার্ড মেনে চলে)। তবে নিজের তৈরি কম্পোনেন্টগুলি, যেমন `<Avatar>`, কাস্টমাইজ `props` পাঠাতে পারেন।
-
-
-````

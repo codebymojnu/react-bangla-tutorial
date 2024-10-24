@@ -2,5 +2,8 @@
   "RespondingToEvents": "Responding To Events",
   "State.a.componentMemory": "State: A Component Memory",
   "How.State.Works.Deep.Drive": "How Sate Works: A Deep Drive",
-  "RenderAndCommit": "React Render and Commit"
+  "RenderAndCommit": "React Render and Commit",
+  "StateAsASnapShot": "State as a Snapshot",
+  "QueuingSerisStateUpdate": "Queuing A Seris of State Update",
+  "UpdatingObjectsInState": "Updating Objects In State"
 }

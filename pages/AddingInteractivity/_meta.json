@@ -5,5 +5,6 @@
   "RenderAndCommit": "React Render and Commit",
   "StateAsASnapShot": "State as a Snapshot",
   "QueuingSerisStateUpdate": "Queuing A Seris of State Update",
-  "UpdatingObjectsInState": "Updating Objects In State"
+  "UpdatingObjectsInState": "Updating Objects In State",
+  "Context.API": "Context API"
 }

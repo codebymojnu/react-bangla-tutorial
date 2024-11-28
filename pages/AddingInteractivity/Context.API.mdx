@@ -253,4 +253,229 @@ export default App;
 
 ---
 
+### **React Context API - Step-by-Step Guide with an Advanced Example**
+
+The **React Context API** is a way to pass data through the component tree without manually passing props at every level. It’s useful for managing global state, like themes, user authentication, or configurations.
+
+---
+
+### **Key Steps in Using Context API**
+
+1. **Create Context**: Use `React.createContext()` to create a context object.
+2. **Provide Context**: Wrap a provider component around your app or parts of it to supply the context value.
+3. **Consume Context**: Use `useContext()` in function components or `Context.Consumer` in class components to access the value.
+
+---
+
+### **Building an Advanced App with Multiple Context Providers**
+
+#### **Setup**: 
+We’ll create a `UserContext` for user info and a `ThemeContext` for managing the app's theme. The context values will come from external files.
+
+---
+
+#### **File Structure**:
+```
+/src
+  /contexts
+    UserContext.js
+    ThemeContext.js
+  /data
+    userData.js
+    themeData.js
+  App.js
+  index.js
+```
+
+---
+
+#### **Step 1: Create External Data Files**
+
+**`/data/userData.js`**
+```javascript
+export const userData = {
+  name: "Md. Mojnu Miah",
+  role: "Frontend Developer",
+  country: "Bangladesh",
+};
+```
+
+**`/data/themeData.js`**
+```javascript
+export const themeData = {
+  light: {
+    background: "#ffffff",
+    color: "#000000",
+  },
+  dark: {
+    background: "#000000",
+    color: "#ffffff",
+  },
+};
+```
+
+---
+
+#### **Step 2: Create Context Providers**
+
+**`/contexts/UserContext.js`**
+```javascript
+import React, { createContext, useState } from "react";
+import { userData } from "../data/userData";
+
+export const UserContext = createContext();
+
+const UserProvider = ({ children }) => {
+  const [user, setUser] = useState(userData);
+
+  return (
+    <UserContext.Provider value={{ user, setUser }}>
+      {children}
+    </UserContext.Provider>
+  );
+};
+
+export default UserProvider;
+```
+
+**`/contexts/ThemeContext.js`**
+```javascript
+import React, { createContext, useState } from "react";
+import { themeData } from "../data/themeData";
+
+export const ThemeContext = createContext();
+
+const ThemeProvider = ({ children }) => {
+  const [theme, setTheme] = useState(themeData.light);
+
+  const toggleTheme = () => {
+    setTheme((prevTheme) =>
+      prevTheme === themeData.light ? themeData.dark : themeData.light
+    );
+  };
+
+  return (
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+};
+
+export default ThemeProvider;
+```
+
+---
+
+#### **Step 3: Combine Providers in `App.js`**
+
+**`App.js`**
+```javascript
+import React from "react";
+import UserProvider from "./contexts/UserContext";
+import ThemeProvider from "./contexts/ThemeContext";
+import MainComponent from "./components/MainComponent";
+
+const App = () => {
+  return (
+    <UserProvider>
+      <ThemeProvider>
+        <MainComponent />
+      </ThemeProvider>
+    </UserProvider>
+  );
+};
+
+export default App;
+```
+
+---
+
+#### **Step 4: Create Components to Use Context**
+
+**`/components/MainComponent.js`**
+```javascript
+import React from "react";
+import UserInfo from "./UserInfo";
+import ThemeSwitcher from "./ThemeSwitcher";
+
+const MainComponent = () => {
+  return (
+    <div>
+      <h1>React Context API Example</h1>
+      <UserInfo />
+      <ThemeSwitcher />
+    </div>
+  );
+};
+
+export default MainComponent;
+```
+
+**`/components/UserInfo.js`**
+```javascript
+import React, { useContext } from "react";
+import { UserContext } from "../contexts/UserContext";
+
+const UserInfo = () => {
+  const { user } = useContext(UserContext);
+
+  return (
+    <div>
+      <h2>User Information:</h2>
+      <p>Name: {user.name}</p>
+      <p>Role: {user.role}</p>
+      <p>Country: {user.country}</p>
+    </div>
+  );
+};
+
+export default UserInfo;
+```
+
+**`/components/ThemeSwitcher.js`**
+```javascript
+import React, { useContext } from "react";
+import { ThemeContext } from "../contexts/ThemeContext";
+
+const ThemeSwitcher = () => {
+  const { theme, toggleTheme } = useContext(ThemeContext);
+
+  return (
+    <div
+      style={{
+        background: theme.background,
+        color: theme.color,
+        padding: "20px",
+        marginTop: "20px",
+        borderRadius: "5px",
+      }}
+    >
+      <h2>Theme Switcher:</h2>
+      <button onClick={toggleTheme} style={{ padding: "10px", cursor: "pointer" }}>
+        Toggle Theme
+      </button>
+    </div>
+  );
+};
+
+export default ThemeSwitcher;
+```
+
+---
+
+### **Key Features of This Example**
+1. **Multiple Contexts**: Both `UserContext` and `ThemeContext` are used in the app.
+2. **External Data Source**: Context values are imported from external files (`userData.js` and `themeData.js`).
+3. **Dynamic Updates**: The theme can be toggled dynamically using `toggleTheme`.
+
+---
+
+### **Result**
+
+1. User information is displayed in the `UserInfo` component.
+2. A `ThemeSwitcher` button allows toggling between light and dark themes.
+3. The context values are globally accessible and managed without prop-drilling.
+
+Would you like to explore any part of this further?
+
 **Does this explanation make things clear? Would you like more examples or further simplification?** 😊

@@ -6,5 +6,6 @@
   "StateAsASnapShot": "State as a Snapshot",
   "QueuingSerisStateUpdate": "Queuing A Seris of State Update",
   "UpdatingObjectsInState": "Updating Objects In State",
-  "Context.API": "Context API"
+  "Context.API": "Context API",
+  "Extracting.State.Logic.into.Reducer": "Extracting State Logic into a Reducer"
 }

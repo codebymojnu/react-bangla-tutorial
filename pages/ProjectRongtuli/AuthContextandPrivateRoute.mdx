@@ -49,47 +49,32 @@ export default function useAuth() {
 
 এখন আমরা `Private Route` তৈরি করব। যার মাধ্যমে কিছু কিছু রাউট প্রাইভেট করব। যদি auth এর মধ্যে user থাকে, তাহলে প্রাইভেট রাউটে ঢুকতে পারবে। তা না হলে ধাক্কা মেরে লগইন পেজে নিয়ে যাবো।
 
-```jsx
-import useAuth from './../hooks/useAuth';
-import { Navigate, Outlet } from 'react-router-dom';
-export default function PrivateRoute(){
+### routes >> PrivateRoutes.jsx
 
-    const {auth}=useAuth();
-    return (
-        {
-            auth.user ? (
-                <main className="mx-auto max-w-[1020px] py-8">
-                    <div className="container">
-                        <Outlet />
-                    </div>
-                </main>
-            ) : (
-                <Navigate to="/login" />
-            )
-        }
-    );
+```jsx
+import { Navigate, Outlet } from "react-router-dom";
+import Header from "../components/common/Header";
+import useAuth from "../hooks/useAuth";
+export default function PrivateRoutes() {
+  const { auth } = useAuth();
+  return (
+    <>
+      {auth.user ? (
+        <>
+          <Header />
+          <main className="mx-auto max-w-[1020px] py-8">
+            <div className="container">
+              <Outlet />
+            </div>
+          </main>
+        </>
+      ) : (
+        <Navigate to="/login" />
+      )}
+    </>
+  );
 }
 ```
-
-#### **1. `import useAuth from './../hooks/useAuth';`**
-
-- **`useAuth`**: এটি একটি কাস্টম হুক যা `AuthContext` থেকে ব্যবহারকারীর লগইন সংক্রান্ত ডেটা (`auth`) আনে।
-
-#### **2. `import { Navigate, Outlet } from 'react-router-dom';`**
-
-- **`Navigate`**: এটি ব্যবহার করে আমরা ব্যবহারকারীকে অন্য পৃষ্ঠায় রিডাইরেক্ট করতে পারি।
-  - এখানে, লগইন না করা থাকলে `/login` পৃষ্ঠায় পাঠানো হচ্ছে।
-- **`Outlet`**: এটি React Router এর একটি কম্পোনেন্ট, যা **"nested routes"** (অর্থাৎ, চাইল্ড রাউট) রেন্ডার করার জন্য ব্যবহৃত হয়।
-
-#### **3. `export default function PrivateRoute() {}`**
-
-- এটি একটি **PrivateRoute** নামের কম্পোনেন্ট। এটি ব্যবহারকারীর লগইন স্টেট অনুযায়ী নির্ধারণ করে, ব্যবহারকারীকে পেজটি দেখতে দেওয়া হবে কিনা।
-
-#### **4. `const { auth } = useAuth();`**
-
-- **`useAuth`** হুকটি ব্যবহার করে এখানে `auth` নামের ডেটা আনা হয়েছে, যেখানে ব্যবহারকারীর তথ্য (`auth.user`) রয়েছে।
-
-#### **5. `return`**
 
 - **`auth.user`**: যদি ব্যবহারকারী লগইন করা থাকে, তাহলে চাইল্ড রাউটগুলো (যা `Outlet` এর মাধ্যমে রেন্ডার হয়) দেখাবে।
 - **`<Navigate to="/login" />`**: যদি ব্যবহারকারী লগইন না থাকে, তাহলে তাকে `/login` পেজে পাঠানো হবে।
@@ -134,3 +119,30 @@ export default function PrivateRoute(){
 - **`Outlet`**: চাইল্ড রাউট রেন্ডার করার জন্য।
 - **`div` ও `main` মুড়ানো হয়েছে**: লেআউট ম্যানেজ ও রেসপন্সিভ ডিজাইনের জন্য।
 - কোডের কাজ: যদি ব্যবহারকারী লগইন থাকে, তাহলে চাইল্ড পেজ দেখাবে। না থাকলে লগইন পেজে পাঠাবে।
+
+## Protected Routes (Guard Routes) and Public Routes Structure
+
+```jsx
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import HomePage from "./components/HomePage";
+import LoginPage from "./components/LoginPage";
+import AuthProvider from "./providers/AuthProvider";
+import PrivateRoutes from "./routes/PrivateRoutes";
+export default function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <Routes>
+          {/* Private Routes */}
+          <Route element={<PrivateRoutes />}>
+            <Route path="/" element={<HomePage />} />
+          </Route>
+
+          {/* Public Routes */}
+          <Route path="/login" element={<LoginPage />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
+  );
+}
+```

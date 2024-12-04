@@ -1,4 +1,6 @@
 {
   "Save.Data.In.Memory": "Save Data in Memory Technique",
-  "AuthContextandPrivateRoute": "Auth Context and Private Route"
+  "AuthContextandPrivateRoute": "Auth Context and Private Route",
+  "JWT.Implementation": "Json Web Token Implementation",
+  "Rongtuli.Project.Backend.Documentation": "Backend API Documentation for Rongtuli Project."
 }

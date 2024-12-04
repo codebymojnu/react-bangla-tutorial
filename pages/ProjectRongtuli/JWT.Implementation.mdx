@@ -1,0 +1,146 @@
+### JWT Implementation in Rongtuli Project
+
+**Objective:**  
+In this document, we’ll outline how JWT (JSON Web Token) is implemented in the Rongtuli social media project to manage user authentication and secure API access.
+
+---
+
+### Login Process Overview
+
+When the `LoginForm` component sends a request to the login endpoint using `axios`, we receive a response object structured as follows:
+
+```json
+{
+  "user": {
+    "id": "a9f2813e-a0a3-4ae0-80a1-570f3d5fbd23",
+    "firstName": "Mojnu",
+    "lastName": "Miah",
+    "avatar": null,
+    "email": "thisismojnu@gmail.com"
+  },
+  "token": {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  }
+}
+```
+
+The `token` object contains:
+
+1. **Access Token:** Used for accessing authorized resources.
+2. **Refresh Token:** Used for renewing the expired access token.
+
+---
+
+### Token Expiration and Renewal
+
+1. **Access Token Expiration:**  
+   Tokens typically expire after a specific duration (e.g., 30 minutes, 1 hour). When expired, API requests return a `401 Unauthorized` error.
+
+2. **Refreshing the Token:**  
+   When the access token expires, the refresh token is used to request a new access token without requiring the user to log in again. This ensures a seamless user experience.
+
+---
+
+### Frontend Configuration
+
+1. **Environment Variables:**  
+   Create an `.env` file in the frontend to store the base URL of the server:
+
+   ```env
+   VITE_SERVER_BASE_URL=http://localhost:3000
+   ```
+
+2. **API Call in `submitForm`:**  
+   Use `axios` to send a POST request with login credentials. On successful response (`response.ok === 200`), destructure the `user` and `token` from `response.data`. Extract the `authToken` and `refreshToken` for further use.
+
+   Example:
+
+   ```jsx
+   const submitForm = async (formData) => {
+     try {
+       const response = await axios.post(
+         `${process.env.VITE_SERVER_BASE_URL}/login`,
+         formData
+       );
+       if (response.status === 200) {
+         const { user, token } = response.data;
+         const { token: authToken, refreshToken } = token;
+         // Save tokens to local storage or state
+       }
+     } catch (error) {
+       // Handle errors and display in UI
+       setError("root.random", { message: error.message });
+     }
+   };
+   ```
+
+---
+
+### Handling Token Expiration
+
+To handle token expiration and renewal efficiently:
+
+1. **Centralized Axios Instance:**  
+   Create an `axios` instance in an `api/index.js` file:
+
+   ```js
+   import axios from "axios";
+
+   const api = axios.create({
+     baseURL: process.env.VITE_SERVER_BASE_URL,
+   });
+
+   export default api;
+   ```
+
+2. **Request and Response Interceptors:**  
+   Use `axios` interceptors to add the `authToken` to every request header automatically and handle token refresh when receiving a `401 Unauthorized` error.
+
+   ```jsx
+   // Add a request interceptor
+   api.interceptors.request.use(
+     (config) => {
+       const authToken = localStorage.getItem("authToken");
+       if (authToken) {
+         config.headers.Authorization = `Bearer ${authToken}`;
+       }
+       return config;
+     },
+     (error) => Promise.reject(error)
+   );
+
+   // Add a response interceptor
+   api.interceptors.response.use(
+     (response) => response,
+     async (error) => {
+       if (error.response && error.response.status === 401) {
+         const refreshToken = localStorage.getItem("refreshToken");
+         if (refreshToken) {
+           try {
+             const res = await axios.post(
+               `${process.env.VITE_SERVER_BASE_URL}/refresh`,
+               { refreshToken }
+             );
+             const { token: newAuthToken } = res.data;
+             localStorage.setItem("authToken", newAuthToken);
+             error.config.headers.Authorization = `Bearer ${newAuthToken}`;
+             return api.request(error.config); // Retry the failed request
+           } catch (refreshError) {
+             // Handle refresh token expiration (e.g., redirect to login)
+           }
+         }
+       }
+       return Promise.reject(error);
+     }
+   );
+   ```
+
+3. **Custom Hook (`useAxios`):**  
+   Encapsulate the interceptor logic in a custom hook to reuse throughout the application. Use `useEffect` to set up interceptors and clean them up when the component unmounts.
+
+---
+
+### Summary
+
+This approach ensures a secure and smooth authentication process using JWT, allowing seamless token renewal without constant user intervention. The centralized `axios` instance and interceptors simplify the management of token-based API calls across the application.

@@ -1,0 +1,309 @@
+এই সেকশনে আমাদের কাজ, ,
+
+১। ছবির উপরে ইডিট পেনে ক্লিক করে ছবি পরিবর্তন
+২। বায়ো সেকশনে ইডিট পেনে ক্লিক করে, বায়ো টেক্সট আপডেট
+
+স্টেট ভেরিয়েবলগুলো হলো প্রাইভেট ডাটা।
+
+এই পেজের স্টেট ভেরিয়েবল গুলো আলাদা জায়গায় মেইনটেইন করলে, আমরা আলাদা একটা সুবিধা পাবো।
+
+১। এই পেজে আমাদের অনেক একশন হ্যান্ডেল করতে হবে। যদি কম্পোনেন্টে হ্যান্ডেল করি। তাহলে কোড অনেক বেড়ে যাবে। আমরা reducer function লিখে সব একশনকে হ্যান্ডেল করতে পারি, কম্পোনেন্টের বাইরে। **যেটি একটি ইনিশিয়াল স্টেট নেয়, একটি নতুন স্টেট রিটার্ণ করে। আগের স্টেটের প্রোপার্টি এবং নতুন স্টেটের প্রোপার্টি একই থাকবে।**
+
+২। আমরা প্রোফাইল পেজে ইমেজ চেঞ্জ করলে হেডারেও সিংক হয়ে যাবে। তার মানে প্রোফাইল ডাটা কোনো Context এ রাখতে হবে। যখন আমরা প্রোজেক্ট করছি, তখন আমাদের ডেটা মডেলিং নিয়ে ভাবতে হবে। এখানে Auth এর মধ্যে ছবি থাকা সত্তেও, সেটি প্রোফাইল পেজে ব্যবহার করব না। Auth Data authentication এর জন্য, প্রোফাইলের জন্য নয়। Auth Model থেকে data নিয়ে হেডারে রেখেছি। সেটা আমরা করব না। Profile এর জন্য আমরা Profile Context এবং Profile Provider তইরি করব। Context এবং Provider এর মধ্যে reducer দিয়ে ডেটা পাস করব।
+
+এখন আমরা যদি প্রোফাইলের কোনো ডাটা চেঞ্জ করি। তখন আমাদের Auth এর কোনো ডাটা চেঞ্জ করা লাগবে না।
+
+---
+
+তাহলে আমরা বুঝে গেলাম আমাদের কি কি দরকার?
+আমাদের ১ নাম্বার দরকার- প্রোফাইলে কি কি একশন আছে।
+২। Profiel reducer
+৩। Profile Context
+৪। Profiel Provider
+5। তারপর আমরা একটা useProfile() নামে একটা হুক থাকবে। যার মাধ্যেমে, ডাটাগুলো আমাদের থ্রো আউট দ্যা আপ্লিকেশন এভেইলএবল রাখবে।
+
+এবং আমরা চাইলে প্রোফাইলের ইনফরমেশনগুলো ইডিটও করতে পারবো।
+
+---
+
+### **1. Define Profile Actions**
+
+প্রথমে প্রোফাইল পেজের বিভিন্ন একশন (যেমন: ডেটা ফেচ করা, আপডেট করা, ত্রুটি ইত্যাদি) ডিফাইন করব।
+
+```javascript
+// actions/index.js
+export const actions = {
+  profile: {
+    PROFILE_FETCHING: "PROFILE_FETCHING",
+    PROFILE_FETCHED: "PROFILE_FETCHED",
+    PROFILE_FETCH_ERROR: "PROFILE_FETCH_ERROR",
+    PROFILE_UPDATED: "PROFILE_UPDATED",
+    IMAGE_UPDATED: "IMAGE_UPDATED",
+  },
+};
+```
+
+---
+
+### **2. Create Profile Reducer**
+
+`profileReducer` স্টেট আপডেট করার জন্য ব্যবহৃত হবে। প্রতিটি একশনের জন্য স্টেট কীভাবে পরিবর্তন হবে তা এখানে নির্ধারিত।
+
+```javascript
+// reducers/profileReducer.js
+const initialState = {
+  user: null,
+  posts: [],
+  loading: false,
+  error: null,
+};
+
+const profileReducer = (state, action) => {
+  switch (action.type) {
+    case actions.profile.PROFILE_FETCHING:
+      return { ...state, loading: true, error: null };
+    case actions.profile.PROFILE_FETCHED:
+      return {
+        ...state,
+        user: action.data.user,
+        posts: action.data.posts,
+        loading: false,
+      };
+    case actions.profile.PROFILE_FETCH_ERROR:
+      return { ...state, error: action.error, loading: false };
+    case actions.profile.PROFILE_UPDATED:
+      return { ...state, user: action.data, loading: false };
+    case actions.profile.IMAGE_UPDATED:
+      return {
+        ...state,
+        user: { ...state.user, avatar: action.data.avatar },
+        loading: false,
+      };
+    default:
+      return state;
+  }
+};
+
+export { initialState, profileReducer };
+```
+
+---
+
+### **3. Create Profile Context and Provider**
+
+Context এবং Provider ব্যবহার করে প্রোফাইল ডেটা পুরো অ্যাপ জুড়ে শেয়ার করা সহজ হবে।
+
+```javascript
+// context/ProfileContext.js
+import React, { createContext, useContext, useReducer } from "react";
+import { profileReducer, initialState } from "../reducers/profileReducer";
+
+const ProfileContext = createContext();
+
+export const ProfileProvider = ({ children }) => {
+  const [state, dispatch] = useReducer(profileReducer, initialState);
+
+  return (
+    <ProfileContext.Provider value={{ state, dispatch }}>
+      {children}
+    </ProfileContext.Provider>
+  );
+};
+
+export const useProfile = () => useContext(ProfileContext);
+```
+
+---
+
+### **4. Refactor ProfilePage**
+
+`ProfilePage`-এ আমরা Context থেকে ডেটা নেব এবং `dispatch` ব্যবহার করব একশন হ্যান্ডল করতে।
+
+```javascript
+import { useEffect } from "react";
+import { actions } from "../actions";
+import { useProfile } from "../context/ProfileContext";
+import { useAuth } from "../hooks/useAuth";
+import useAxios from "../hooks/useAxios";
+import ProfileInfo from "../components/Profile/ProfileInfo";
+import Posts from "../components/Profile/MyPosts";
+
+const ProfilePage = () => {
+  const { state, dispatch } = useProfile();
+  const { auth } = useAuth();
+  const { api } = useAxios();
+
+  useEffect(() => {
+    dispatch({ type: actions.profile.PROFILE_FETCHING });
+    const fetchProfile = async () => {
+      try {
+        const response = await api.get(`/profile/${auth.user.id}`);
+        dispatch({
+          type: actions.profile.PROFILE_FETCHED,
+          data: response.data,
+        });
+      } catch (error) {
+        dispatch({
+          type: actions.profile.PROFILE_FETCH_ERROR,
+          error: error.message,
+        });
+      }
+    };
+
+    fetchProfile();
+  }, [auth.user.id, api]);
+
+  if (state.loading) return <div>Loading...</div>;
+  if (state.error) return <div>Error: {state.error}</div>;
+
+  return (
+    <div>
+      <ProfileInfo />
+      <Posts posts={state.posts} />
+    </div>
+  );
+};
+
+export default ProfilePage;
+```
+
+---
+
+### **5. Implement Profile Image Upload**
+
+`ProfileImage` কম্পোনেন্ট ব্যবহার করে ছবি আপলোড করব। এখানে `useRef` দিয়ে ফাইল সিলেক্টর হ্যান্ডল করা হয়েছে।
+
+```javascript
+import { useRef } from "react";
+import { useProfile } from "../../context/ProfileContext";
+import { actions } from "../../actions";
+import useAxios from "../../hooks/useAxios";
+
+const ProfileImage = () => {
+  const { state, dispatch } = useProfile();
+  const { api } = useAxios();
+  const fileUploaderRef = useRef();
+
+  const handleImageUpload = () => {
+    fileUploaderRef.current.click();
+  };
+
+  const updateImageDisplay = async () => {
+    const formData = new FormData();
+    formData.append("avatar", fileUploaderRef.current.files[0]);
+
+    dispatch({ type: actions.profile.PROFILE_FETCHING });
+
+    try {
+      const response = await api.post(
+        `/profile/${state.user.id}/avatar`,
+        formData
+      );
+      dispatch({
+        type: actions.profile.IMAGE_UPDATED,
+        data: response.data,
+      });
+    } catch (error) {
+      dispatch({
+        type: actions.profile.PROFILE_FETCH_ERROR,
+        error: error.message,
+      });
+    }
+  };
+
+  return (
+    <div className="relative">
+      <img
+        src={state.user?.avatar}
+        alt={state.user?.name}
+        className="rounded-full"
+      />
+      <button onClick={handleImageUpload} className="absolute bottom-2 right-2">
+        Edit
+      </button>
+      <input
+        type="file"
+        ref={fileUploaderRef}
+        hidden
+        onChange={updateImageDisplay}
+      />
+    </div>
+  );
+};
+
+export default ProfileImage;
+```
+
+---
+
+### **6. Bio Update**
+
+`Bio`-তে `editMode` টগল করে বায়ো আপডেট করা যাবে।
+
+```javascript
+import { useState } from "react";
+import { useProfile } from "../../context/ProfileContext";
+import { actions } from "../../actions";
+
+const Bio = () => {
+  const { state, dispatch } = useProfile();
+  const [editMode, setEditMode] = useState(false);
+  const [bio, setBio] = useState(state.user?.bio);
+
+  const handleBioSave = async () => {
+    dispatch({ type: actions.profile.PROFILE_FETCHING });
+
+    try {
+      const response = await api.patch(`/profile/${state.user.id}`, { bio });
+      dispatch({ type: actions.profile.PROFILE_UPDATED, data: response.data });
+      setEditMode(false);
+    } catch (error) {
+      dispatch({
+        type: actions.profile.PROFILE_FETCH_ERROR,
+        error: error.message,
+      });
+    }
+  };
+
+  return (
+    <div>
+      {!editMode ? (
+        <p>{state.user?.bio}</p>
+      ) : (
+        <textarea value={bio} onChange={(e) => setBio(e.target.value)} />
+      )}
+      <button onClick={() => setEditMode(!editMode)}>
+        {editMode ? "Save" : "Edit"}
+      </button>
+    </div>
+  );
+};
+
+export default Bio;
+```
+
+---
+
+### **7. Wrap with ProfileProvider**
+
+`App`-এ `ProfileProvider` যুক্ত করব।
+
+```javascript
+import { ProfileProvider } from "./context/ProfileContext";
+
+function App() {
+  return (
+    <ProfileProvider>
+      <Routes>
+        <Route path="/profile" element={<ProfilePage />} />
+      </Routes>
+    </ProfileProvider>
+  );
+}
+
+export default App;
+```
+
+---
+
+**এইভাবে আপনার প্রোফাইল পেজ আরও রিডেবল, স্কেলেবল এবং সহজে মেইনটেইনেবল হয়ে যাবে।**

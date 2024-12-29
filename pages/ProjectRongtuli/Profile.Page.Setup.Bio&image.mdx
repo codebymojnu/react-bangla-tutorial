@@ -175,58 +175,67 @@ export default ProfilePage;
 
 ```javascript
 import { useRef } from "react";
-import { useProfile } from "../../context/ProfileContext";
-import { actions } from "../../actions";
 import useAxios from "../../hooks/useAxios";
+import useProfile from "../../hooks/useProfile";
+import { actions } from "./../../actions/index";
 
 const ProfileImage = () => {
   const { state, dispatch } = useProfile();
   const { api } = useAxios();
   const fileUploaderRef = useRef();
 
-  const handleImageUpload = () => {
+  const handleImageUpload = (event) => {
+    event.preventDefault();
+
+    fileUploaderRef.current.addEventListener("change", updateImageDisplay);
     fileUploaderRef.current.click();
   };
 
   const updateImageDisplay = async () => {
-    const formData = new FormData();
-    formData.append("avatar", fileUploaderRef.current.files[0]);
-
-    dispatch({ type: actions.profile.PROFILE_FETCHING });
-
     try {
+      const formData = new FormData();
+      for (const file of fileUploaderRef.current.files) {
+        formData.append("avatar", file);
+      }
+
       const response = await api.post(
-        `/profile/${state.user.id}/avatar`,
+        `${import.meta.env.VITE_SERVER_BASE_URL}/profile/${
+          state?.user?.id
+        }/avatar`,
         formData
       );
+      if (response.status === 200) {
+        dispatch({
+          type: actions.profile.IMAGE_UPDATED,
+          data: response.data,
+        });
+      }
+    } catch (err) {
       dispatch({
-        type: actions.profile.IMAGE_UPDATED,
-        data: response.data,
-      });
-    } catch (error) {
-      dispatch({
-        type: actions.profile.PROFILE_FETCH_ERROR,
-        error: error.message,
+        type: actions.profile.DATA_FETCH_ERROR,
+        error: err.message,
       });
     }
   };
 
   return (
-    <div className="relative">
+    <div className="relative mb-8 max-h-[180px] max-w-[180px] rounded-full lg:mb-11 lg:max-h-[218px] lg:max-w-[218px]">
       <img
-        src={state.user?.avatar}
-        alt={state.user?.name}
-        className="rounded-full"
+        className="max-w-full rounded-full"
+        src={`${import.meta.env.VITE_SERVER_BASE_URL}/${state?.user?.avatar}`}
+        alt={state?.user?.firstName}
       />
-      <button onClick={handleImageUpload} className="absolute bottom-2 right-2">
-        Edit
-      </button>
-      <input
-        type="file"
-        ref={fileUploaderRef}
-        hidden
-        onChange={updateImageDisplay}
-      />
+
+      <form id="form" encType="multipart/form-data">
+        <button
+          className="flex-center absolute bottom-4 right-4 h-7 w-7 rounded-full bg-black/50 hover:bg-black/80"
+          onClick={handleImageUpload}
+          type="submit"
+        >
+          <img src="./assets/icons/edit.svg" alt="Edit" />
+        </button>
+        <input id="file" type="file" ref={fileUploaderRef} hidden />
+      </form>
     </div>
   );
 };
@@ -235,6 +244,157 @@ export default ProfileImage;
 ```
 
 ---
+
+এই কোডটি একটি React কম্পোনেন্ট যা ব্যবহারকারীর প্রোফাইল ছবির আপলোড এবং আপডেট করার জন্য ব্যবহৃত হয়। আমি প্রত্যেকটি অংশ এবং কী-ওয়ার্ড ব্যাখ্যা করবো যেন একজন বিগিনারও সহজে বুঝতে পারে।
+
+---
+
+### **লাইন বাই লাইন ব্যাখ্যা:**
+
+avatar, ইউজার ছবির ফাইল পাত দেয়, (_uploads/avatar/avatar-1733974637068-648383628.jpg_) যা সার্ভারে সেভ থাকে। ব্রাউজার ইমেজ লোড করার জন্য সম্পূর্ণ URL চায়, যেখানে ডোমেইন বা সার্ভারের ঠিকানাসহ ফাইল পাথ থাকতে হবে।
+
+#### **ইম্পোর্ট অংশ**
+
+```javascript
+import { useRef } from "react";
+import useAxios from "../../hooks/useAxios";
+import useProfile from "../../hooks/useProfile";
+import { actions } from "./../../actions/index";
+```
+
+- **`useRef`**: এটি React এর একটি হুক যা DOM উপাদান বা ভেরিয়েবল রেফারেন্স করে রাখে। এখানে ফাইল আপলোড ইনপুট এর রেফারেন্স ধরে রাখার জন্য ব্যবহৃত হচ্ছে।
+- **`useAxios`**: এটি একটি কাস্টম হুক যা API কল করার জন্য ব্যবহৃত হয়। এটি কোডে পুনঃব্যবহারযোগ্য ফাংশন সরবরাহ করে।
+- **`useProfile`**: এটি আরেকটি কাস্টম হুক যা ব্যবহারকারীর প্রোফাইল সম্পর্কিত ডেটা এবং অ্যাকশন অ্যাক্সেস করতে ব্যবহৃত হয়।
+- **`actions`**: এটি একটি অবজেক্ট যা Redux-এর মতো স্টেট ম্যানেজমেন্টে বিভিন্ন অ্যাকশন টাইপ সংজ্ঞায়িত করতে ব্যবহৃত হয়।
+
+---
+
+#### **`ProfileImage` কম্পোনেন্ট ডিক্লারেশন**
+
+```javascript
+const ProfileImage = () => {
+  const { state, dispatch } = useProfile();
+  const { api } = useAxios();
+  const fileUploaderRef = useRef();
+```
+
+- **`ProfileImage`**: একটি ফাংশনাল কম্পোনেন্ট যা প্রোফাইল ইমেজ আপডেট করার জন্য তৈরি।
+- **`state, dispatch`**: `useProfile` থেকে স্টেট (বর্তমান ডেটা) এবং `dispatch` (স্টেট পরিবর্তনের জন্য ব্যবহৃত) পাওয়া যাচ্ছে।
+- **`api`**: `useAxios` থেকে API কল করার জন্য `api` ফাংশন পাওয়া যাচ্ছে।
+- **`fileUploaderRef`**: `useRef` ব্যবহার করে ফাইল ইনপুট এলিমেন্টের রেফারেন্স রাখা হচ্ছে।
+
+---
+
+#### **ইমেজ আপলোড হ্যান্ডলিং ফাংশন**
+
+```javascript
+const handleImageUpload = (event) => {
+  event.preventDefault();
+
+  fileUploaderRef.current.addEventListener("change", updateImageDisplay);
+  fileUploaderRef.current.click();
+};
+```
+
+- **`handleImageUpload`**: একটি ইভেন্ট হ্যান্ডলার যা ফাইল আপলোড ডায়ালগ বক্স খুলে।
+- **`event.preventDefault()`**: পেজ রিলোড হওয়া বন্ধ করার জন্য।
+- **`fileUploaderRef.current.addEventListener("change", updateImageDisplay)`**: যখন ব্যবহারকারী নতুন ফাইল নির্বাচন করবে, তখন `updateImageDisplay` ফাংশন চালু হবে।
+- **`fileUploaderRef.current.click()`**: জাভাস্ক্রিপ্ট দিয়ে ফাইল আপলোড ডায়ালগ বক্স প্রোগ্রামেটিক্যালি খুলে।
+
+---
+
+#### **ইমেজ প্রসেসিং এবং সার্ভারে পাঠানো**
+
+```javascript
+const updateImageDisplay = async () => {
+  try {
+    const formData = new FormData();
+    for (const file of fileUploaderRef.current.files) {
+      formData.append("avatar", file);
+    }
+
+    const response = await api.post(
+      `${import.meta.env.VITE_SERVER_BASE_URL}/profile/${
+        state?.user?.id
+      }/avatar`,
+      formData
+    );
+    if (response.status === 200) {
+      dispatch({
+        type: actions.profile.IMAGE_UPDATED,
+        data: response.data,
+      });
+    }
+  } catch (err) {
+    dispatch({
+      type: actions.profile.DATA_FETCH_ERROR,
+      error: err.message,
+    });
+  }
+};
+```
+
+- **`updateImageDisplay`**: এটি একটি অ্যাসিঙ্ক ফাংশন যা ফাইল আপলোড করে।
+- **`new FormData()`**: এটি ফাইল এবং ডেটা প্রক্রিয়া করার জন্য HTML ফর্ম ডেটা তৈরি করে।
+- **`fileUploaderRef.current.files`**: ব্যবহারকারীর নির্বাচিত ফাইলগুলোর অ্যারে।
+- **`formData.append("avatar", file)`**: ফাইল সার্ভারে পাঠানোর জন্য ফর্ম ডেটাতে যোগ করা হচ্ছে।
+- **`api.post`**: API কল করে প্রোফাইল ইমেজ সার্ভারে আপলোড করা হচ্ছে।
+- **`dispatch`**: সফল হলে `IMAGE_UPDATED` অ্যাকশন প্রেরণ করে। ব্যর্থ হলে `DATA_FETCH_ERROR` অ্যাকশন প্রেরণ করে।
+
+---
+
+#### **UI তৈরি**
+
+```javascript
+return (
+  <div className="relative mb-8 max-h-[180px] max-w-[180px] rounded-full lg:mb-11 lg:max-h-[218px] lg:max-w-[218px]">
+    <img
+      className="max-w-full rounded-full"
+      src={`${import.meta.env.VITE_SERVER_BASE_URL}/${state?.user?.avatar}`}
+      alt={state?.user?.firstName}
+    />
+
+    <form id="form" encType="multipart/form-data">
+      <button
+        className="flex-center absolute bottom-4 right-4 h-7 w-7 rounded-full bg-black/50 hover:bg-black/80"
+        onClick={handleImageUpload}
+        type="submit"
+      >
+        <img src="./assets/icons/edit.svg" alt="Edit" />
+      </button>
+      <input id="file" type="file" ref={fileUploaderRef} hidden />
+    </form>
+  </div>
+);
+```
+
+- **UI Elements**:
+  - **`<div>`**: প্রোফাইল ইমেজ প্রদর্শন এবং ফাইল আপলোড বাটন রাখার জন্য কন্টেইনার।
+  - **`<img>`**: প্রোফাইল ইমেজ দেখানোর জন্য।
+  - **`<form>`**: ফাইল আপলোড করার জন্য HTML ফর্ম।
+  - **`<button>`**: আপলোড শুরু করার জন্য বাটন।
+  - **`<input>`**: `type="file"` ইনপুট, যা ফাইল আপলোডের জন্য ব্যবহৃত।
+
+---
+
+#### **ডিফল্ট এক্সপোর্ট**
+
+```javascript
+export default ProfileImage;
+```
+
+- **`export default`**: এই কম্পোনেন্টকে অন্য ফাইলে ব্যবহারের জন্য এক্সপোর্ট করছে।
+
+---
+
+### **কোডের কার্যপ্রণালী (সংক্ষেপে)**
+
+1. ব্যবহারকারী ইমেজ আপডেট বাটনে ক্লিক করলে `handleImageUpload` চালু হয়।
+2. এটি `fileUploaderRef` কে ট্রিগার করে, এবং ব্যবহারকারী ফাইল নির্বাচন করতে পারে।
+3. ফাইল নির্বাচিত হলে `updateImageDisplay` API কলের মাধ্যমে ফাইল সার্ভারে আপলোড করে।
+4. সফল হলে `dispatch` এর মাধ্যমে স্টেট আপডেট করে এবং প্রোফাইল ইমেজ পরিবর্তিত হয়।
+
+কিছু অস্পষ্ট থাকলে জানাও! 😊
 
 ### **6. Bio Update**
 

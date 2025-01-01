@@ -1,0 +1,1735 @@
+## সেকশন ১: প্রজেক্ট সেট আপ করা
+
+এখন আমরা ধাপে ধাপে কিভাবে Vite, React.js, TailwindCSS এবং Axios ব্যবহার করে Quiz Application ফ্রন্টএন্ড তৈরি করতে হয় তা আলোচনা করবো।
+
+### ১. **Vite প্রজেক্ট ইনিশিয়ালাইজ করা:**
+
+আপনার টার্মিনাল খুলুন এবং নিচের কমান্ডগুলো রান করুন একটি নতুন Vite প্রজেক্ট তৈরি করতে React টেমপ্লেট সহ।
+
+```bash
+npm create vite@latest my-quiz-app --template react
+cd my-quiz-app
+npm install
+```
+
+### ২. **TailwindCSS ইনস্টল করা:**
+
+TailwindCSS সেট আপ করতে নিচের কমান্ডগুলো রান করুন।
+
+```bash
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+```
+
+`tailwind.config.js` ফাইলটি কনফিগার করুন যাতে আপনার টেমপ্লেট ফাইলগুলোর পাথ অন্তর্ভুক্ত থাকে।
+
+```javascript
+// tailwind.config.js
+module.exports = {
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+};
+```
+
+আপনার CSS ফাইলে Tailwind ডিরেক্টিভ যোগ করুন:
+
+```css
+/* ./src/index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+### ৩. **Axios ও React Router Dom ইনস্টল করা:**
+
+API কল করার জন্য Axios ব্যবহার করা হবে।
+
+```bash
+npm install axios react-router-dom
+```
+
+আপনার Vite, React, এবং TailwindCSS প্রজেক্টে Google Fonts থেকে একাধিক `fontFamily` ব্যবহার করতে চাইলে নিচের ধাপগুলো অনুসরণ করুন:
+
+---
+
+## সেকশন ২: **Customized/Google Fonts সেট আপ**
+
+### ১. পছন্দের Font বেছে নিন
+
+Google Fonts-এ গিয়ে একাধিক ফন্ট বেছে নিন। প্রতিটি ফন্টের জন্য আলাদা লিঙ্ক পাবেন। উদাহরণস্বরূপ:
+
+- **Roboto** ফন্টের জন্য:
+
+  ```html
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+    rel="stylesheet"
+  />
+  ```
+
+- **Lobster** ফন্টের জন্য:
+  ```html
+  <link
+    href="https://fonts.googleapis.com/css2?family=Lobster&display=swap"
+    rel="stylesheet"
+  />
+  ```
+
+---
+
+### ২. **ফন্ট লিঙ্কগুলো HTML ফাইলে যোগ করুন**
+
+আপনার প্রজেক্টের `index.html` ফাইলের `<head>` ট্যাগে এই লিঙ্কগুলো যোগ করুন:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite React Tailwind</title>
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lobster&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
+```
+
+---
+
+### ৩. **TailwindCSS কনফিগারেশন আপডেট করুন**
+
+`tailwind.config.js` ফাইলে `fontFamily` সেটআপ করুন। উদাহরণ:
+
+```javascript
+// tailwind.config.js
+module.exports = {
+  content: ["./src/**/*.{js,jsx,ts,tsx}"],
+  theme: {
+    extend: {
+      fontFamily: {
+        roboto: ["Roboto", "sans-serif"],
+        lobster: ["Lobster", "cursive"],
+      },
+    },
+  },
+  plugins: [],
+};
+```
+
+---
+
+### ৪. **React কম্পোনেন্টে ফন্ট ব্যবহার করুন**
+
+এখন TailwindCSS এর `font-roboto` এবং `font-lobster` ক্লাস ব্যবহার করে ফন্ট অ্যাপ্লাই করতে পারবেন। উদাহরণ:
+
+```jsx
+export default function App() {
+  return (
+    <div className="p-5">
+      <h1 className="text-3xl font-lobster">This is Lobster Font</h1>
+      <p className="text-lg font-roboto">This is Roboto Font</p>
+    </div>
+  );
+}
+```
+
+---
+
+**সংক্ষেপে:**  
+Google Fonts এর লিঙ্ক `index.html`-এ যোগ করুন, তারপর `tailwind.config.js`-এ `fontFamily` কনফিগার করুন, এবং অবশেষে TailwindCSS ক্লাস ব্যবহার করে ফন্ট অ্যাপ্লাই করুন।
+
+### Ignore .env file .gitignore
+
+If you've accidentally pushed your `.env` file to your repository and want to ensure it is ignored and removed from the repository, follow these steps:
+
+---
+
+### 1. **Add `.env` to `.gitignore`**
+
+- Open your project directory.
+- Add `.env` to your `.gitignore` file (or create a `.gitignore` file if it doesn't exist).  
+  Example `.gitignore` file:
+  ```
+  # Ignore environment files
+  .env
+  ```
+
+---
+
+### 2. **Remove `.env` from the Git Repository**
+
+Even after adding `.env` to `.gitignore`, it won't remove the file from the repository if it's already tracked. You need to untrack it:
+
+1. Run the following command to untrack the `.env` file:
+
+   ```bash
+   git rm --cached .env
+   ```
+
+2. Commit the changes:
+
+   ```bash
+   git commit -m "Remove .env file from repository"
+   ```
+
+3. Push the changes to your remote repository:
+   ```bash
+   git push
+   ```
+
+---
+
+### 3. **Secure Sensitive Information**
+
+If your `.env` file contains sensitive data (like API keys, database credentials, etc.), consider revoking and regenerating those keys as they might already be compromised.
+
+---
+
+### 4. **Verify `.env` is Ignored**
+
+To confirm `.env` is ignored, you can test it by running:
+
+```bash
+git status
+```
+
+The `.env` file should no longer appear in the output.
+
+---
+
+### 5. **Use Environment Variables Securely**
+
+For future reference:
+
+- Always add `.env` to `.gitignore` at the start of a project.
+- Avoid pushing sensitive information to repositories. Use tools like [GitHub Secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets) for secure configuration in CI/CD pipelines.
+
+Let me know if you need help fixing any specific issues!
+
+## সেকশন ৩: প্রজেক্ট স্ট্রাকচার সেট আপ করা
+
+প্রয়োজনীয় ফোল্ডার এবং ফাইলগুলো তৈরি করুন আপনার প্রজেক্ট স্ট্রাকচারের জন্য।
+
+### ১. **Project Structure: Practice-Pratidin**
+
+Organize the project into components and pages:
+
+```
+src/
+|-- components/
+|   |-- Navbar.js
+|   |-- Footer.js
+|-- pages/
+|   |-- HomePage.js
+|   |-- LoginPage.js
+|   |-- RegistrationPage.js
+|   |-- QuizPage.js
+|   |-- LeaderboardPage.js
+|   |-- ResultPage.js
+|   |-- admin/
+|       |-- AdminDashboard.js
+|       |-- AdminQuizSetPage.js
+|       |-- AdminQuizSetEntryPage.js
+|-- App.js
+|-- index.css
+|-- main.js
+```
+
+```bash
+mkdir -p src/components src/pages src/api src/context src/utils
+touch src/api/quizAPI.js src/context/AuthContext.js src/utils/PrivateRoute.js
+```
+
+### ২. কম্পোনেন্ট এবং পেজ তৈরি করা
+
+ধাপে ধাপে HomePage, LoginPage, RegistrationPage, LeaderboardPage, QuizPage, ResultPage, NotFoundPage তাদের পেজ তৈরি করা হবে। এছাড়া Header, Footer কম্পোনেন্ট তৈরি করা হবে। পেজগুলো যত টুকরো টুকরো করা যায়, ততগুলো টুকরো কম্পোনেন্টে ভাগ করা যেতে পারে।
+
+এবং admin ফোল্ডারে আপনার এডমিন প্যানেল AdminDashboardPage, QuizSetPage, QuizSetEntry কম্পোনেন্ট এবং পেজ তৈরি করা হবে।
+
+### ৩. `.env` ফাইলে API URL সেট করা
+
+অ্যাপ্লিকেশনের বেস ইউআরএল `.env` ফাইলে সেট করা হয়।
+
+```env
+VITE_SERVER_BASE_URL=http://localhost:3000/api
+```
+
+এই URL ব্যবহার করে অ্যাপ্লিকেশন থেকে API কল করা হয়।
+
+---
+
+## সেকশন ৪: রাউটিং যোগ করা, প্রাইভেট রাউট ইমপ্লিমেন্ট করা
+
+### ১. **আমাদের এপ্রোচ তৈরি**
+
+এখানে আমরা React Router Dom ব্যবহার করে রাউটিং সেটআপ করবো। প্রাইভেট রাউট তৈরি করে ব্যবহারকারী লগইন করা থাকলে প্রাইভেট পেজে প্রবেশ করতে পারবে।
+
+এই প্রজেক্ট করার পর, আমাদের Aprroch যেন এমন হয়ে যায়। যেন যেকোনো প্রজেক্ট করতে গেলে, ঠিক এই একই এপ্রোচে আগাতে পারি।
+
+এখন আমাদের লগইন ইউজারের ইনফরমেশন স্টোর করতে হবে। এই প্রজেক্টে আমরা _ইন মেমরি_ স্টোর করব। আগের ডকুমেন্টে (`Rongtul Project`) ইন মেমরি কিভাবে ডাটা স্টোর করা যায়। বিস্তারিত বলেছি।
+
+১। এখন Context API দিয়ে, আমরা AuthContext তৈরি করব।
+
+২। এবং AuthProvider তৈরি করে, পুরো এপ্লিকেশনকে মুড়িয়ে দিবো। সেখানে আমরা লগইন করা ইউজারের তথ্য স্টোর করবো।
+
+৩। এবং useAuth নামে একটি কাস্টম হুক বানাবো, যার মাধ্যমে আমরা login user এর তথ্য নিয়ে সকল পেজে খেলতে পারবো। যাতে করে বার বার `useContext` এবং `AuthContext` সব পেজে import করা না লাগে।
+
+যাতে accross the page অর্থাৎ ওয়েবসাইটের সব পেজ এ আমরা এই ডাটা শেয়ার করতে পারি।
+
+### ২. AuthContext, AuthProvider, and useAuth Hook তৈরি করা
+
+**context/AuthContext.jsx**
+
+```jsx
+import { createContext } from "react";
+const AuthContext = createContext();
+
+export default AuthContext;
+```
+
+**providers/AuthProvider.jsx**
+
+```jsx
+import { useState } from "react";
+import AuthContext from "../context/AuthContext";
+
+export default function AuthProvider({ children }) {
+  const [auth, setAuth] = useState("");
+
+  return (
+    <AuthContext.Provider value={{ auth, setAuth }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+```
+
+**hooks/useAuth.js**
+
+```js
+import { useContext } from "react";
+import AuthContext from "../context/AuthContext";
+
+export default function useAuth() {
+  return useContext(AuthContext);
+}
+```
+
+এখন আমরা `Private Route` তৈরি করব। যার মাধ্যমে কিছু কিছু রাউট প্রাইভেট করব। যদি auth এর মধ্যে user থাকে, তাহলে প্রাইভেট রাউটে ঢুকতে পারবে। তা না হলে ধাক্কা মেরে লগইন পেজে নিয়ে যাবো।
+
+### ৩. Private Route বানানো
+
+**routes/PrivateRoutes.jsx**
+
+```jsx
+import { Navigate, Outlet } from "react-router-dom";
+import Header from "../components/common/Header";
+import useAuth from "../hooks/useAuth";
+export default function PrivateRoutes() {
+  const { auth } = useAuth();
+  return (
+    <>
+      {auth.user ? (
+        <>
+          <Header />
+          <main className="mx-auto max-w-[1020px] py-8">
+            <div className="container">
+              <Outlet />
+            </div>
+          </main>
+        </>
+      ) : (
+        <Navigate to="/login" />
+      )}
+    </>
+  );
+}
+```
+
+- **`auth.user`**: যদি ব্যবহারকারী লগইন করা থাকে, তাহলে চাইল্ড রাউটগুলো (যা `Outlet` এর মাধ্যমে রেন্ডার হয়) দেখাবে।
+- **`<Navigate to="/login" />`**: যদি ব্যবহারকারী লগইন না থাকে, তাহলে তাকে `/login` পেজে পাঠানো হবে।
+
+---
+
+**`Outlet` এর কাজ কী?**
+
+**`<Outlet />`** React Router-এ **nested routes** রেন্ডার করার জন্য ব্যবহৃত হয়। এটি মূলত চাইল্ড রাউটগুলোর জন্য একটি জায়গা তৈরি করে, যেখানে রাউট অনুযায়ী ডাইনামিক কন্টেন্ট দেখানো যায়।
+
+উদাহরণ:
+
+```jsx
+<Route path="/dashboard" element={<PrivateRoute />}>
+  <Route path="profile" element={<ProfilePage />} />
+  <Route path="settings" element={<SettingsPage />} />
+</Route>
+```
+
+- এখানে `PrivateRoute` এর মধ্যে **`<Outlet />`** রেন্ডার হবে, এবং `path` অনুযায়ী কখনো `<ProfilePage />`, কখনো `<SettingsPage />` দেখাবে।
+
+---
+
+**`<Outlet />` ট্যাগকে `div` এবং `main` দিয়ে মুড়িয়ে দিলাম কেন?**
+
+1. **স্টাইল এবং লেআউটের জন্য**:
+
+   - **`<main>`**: HTML এর একটি সেম্যান্টিক ট্যাগ। এটি মূল কনটেন্টের জন্য ব্যবহৃত হয়। সার্চ ইঞ্জিন এবং স্ক্রিন রিডার বুঝতে পারে এটি মূল কন্টেন্ট।
+   - **`<div>`**: এটি নির্দিষ্ট সেকশনের স্টাইল এবং লেআউট ম্যানেজ করার জন্য।
+
+2. **রেসপন্সিভ লেআউট**:
+
+   - **`className="mx-auto max-w-[1020px] py-8"`**: এখানে রেসপন্সিভ লেআউট তৈরি করার জন্য `main` এবং `div` ব্যবহার করা হয়েছে। এটি কন্টেন্টকে কেন্দ্রস্থলে রাখে এবং একটি নির্দিষ্ট প্রস্থ দেয়।
+
+3. **কোডের রিডেবিলিটি**:
+   - এটি কোডকে আরও গঠনমূলক ও রিডেবল করে। ভবিষ্যতে নতুন ক্লাস বা লেআউট অ্যাড করাও সহজ হয়।
+
+---
+
+### ৪. স্ট্রাকচার Protected Routes and Public Routes in App.js
+
+```jsx
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import HomePage from "./components/HomePage";
+import LoginPage from "./components/LoginPage";
+import AuthProvider from "./providers/AuthProvider";
+import PrivateRoutes from "./routes/PrivateRoutes";
+export default function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <Routes>
+          {/* Private Routes */}
+          <Route element={<PrivateRoutes />}>
+            <Route path="/" element={<HomePage />} />
+          </Route>
+
+          {/* Public Routes */}
+          <Route path="/login" element={<LoginPage />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
+  );
+}
+```
+
+## সেকশন ৫: জেসন ওয়েব টোকেন ইমপ্লিমেন্টেশন (JWT)
+
+এই প্রজেক্টে **JWT** ব্যবহার করে **Quiz Application**-এ ইউজারের অথেন্টিকেশন এবং অথোরাইজেশন ইমপ্লিমেন্ট করা হয়েছে। এই ডকুমেন্টে ধাপে ধাপে পুরো প্রসেসটি তুলে ধরা হয়েছে।
+
+---
+
+### **স্টেপ ১: লগইন এবং টোকেন রিসিভ করা**
+
+লগইন ফর্ম সাবমিট করার পর নিচের ধাপগুলো ঘটে:
+
+1. **API কল:**
+
+   - ইউজারের দেওয়া ডেটা (ইমেইল এবং পাসওয়ার্ড) ব্যাকএন্ডে পাঠানো হয়।
+   - এই জন্য **Axios POST** ব্যবহার করা হয়।
+
+2. **রেসপন্স:**
+   - সঠিক তথ্য দিলে ব্যাকএন্ড থেকে নিচের ফরম্যাটে ডেটা রিটার্ন হয়:
+
+```json
+{
+  "status": "success",
+  "data": {
+    "user": {
+      "id": "19a255dd-2b72-48f1-9bef-a09e60cb0903",
+      "full_name": "Md. Mojnu Miah",
+      "email": "thisismojnu@gmail.com",
+      "role": "user",
+      "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE5YTI1NWRkLTJiNzItNDhmMS05YmVmLWEwOWU2MGNiMDkwMyIsImlhdCI6MTczNTU2MzQ1NCwiZXhwIjoxNzM1NTYzNzU0fQ.el6ZNkCk_MrmKYZy4YpeBjvL3KhrjcZkshTHSmsGPYM",
+      "createdAt": "2024-12-30T12:56:53.946Z",
+      "updatedAt": "2024-12-30T12:57:34.212Z"
+    },
+    "tokens": {
+      "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE5YTI1NWRkLTJiNzItNDhmMS05YmVmLWEwOWU2MGNiMDkwMyIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzM1NTYzNDU0LCJleHAiOjE3MzU1NjM1MTR9.90CobrtMrHCD0CPkZNE1jBK6eYQpXPJoaO3njslR8MU",
+      "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE5YTI1NWRkLTJiNzItNDhmMS05YmVmLWEwOWU2MGNiMDkwMyIsImlhdCI6MTczNTU2MzQ1NCwiZXhwIjoxNzM1NTYzNzU0fQ.el6ZNkCk_MrmKYZy4YpeBjvL3KhrjcZkshTHSmsGPYM"
+    }
+  }
+}
+```
+
+3. **ডেটা সংরক্ষণ:**
+   - রেসপন্স থেকে `user`, `accessToken`, এবং `refreshToken` আলাদা করে স্টেটে সংরক্ষণ করা হয়।
+   - **Error Handling:** ভুল তথ্য দিলে **try-catch** ব্লকের মাধ্যমে এরর হ্যান্ডল করে UI-তে দেখানো হয়।
+
+**কোড উদাহরণ:**
+
+```jsx
+const onSubmit = async (formData) => {
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_SERVER_BASE_URL}/auth/login`,
+      formData
+    );
+
+    console.log("Login response:", response?.data);
+
+    if (response.status === 200) {
+      const { user, tokens } = response?.data?.data;
+      const { accessToken, refreshToken } = tokens;
+
+      // সঠিকভাবে `authToken` সেট করা হচ্ছে
+      setAuth({ user, authToken: accessToken, refreshToken });
+      navigate("/"); // হোমপেজে রিডাইরেক্ট
+    }
+  } catch (error) {
+    console.error("Login error:", error.message);
+  }
+};
+```
+
+---
+
+### **স্টেপ ২: `.env` ফাইলে API URL সেট করা**
+
+অ্যাপ্লিকেশনের বেস ইউআরএল `.env` ফাইলে সেট করা হয়।
+
+```env
+VITE_SERVER_BASE_URL=http://localhost:5000/api
+```
+
+এই URL ব্যবহার করে অ্যাপ্লিকেশন থেকে API কল করা হয়।
+
+---
+
+### **স্টেপ ৩: টোকেন এক্সপায়ার হলে রিফ্রেশ টোকেন ব্যবহার করা**
+
+JWT-এর মেয়াদ থাকে নির্দিষ্ট সময়ের জন্য (যেমন ৩০ মিনিট)। মেয়াদ শেষ হলে `401 Unauthorized` এরর পাওয়া যায়। এ ক্ষেত্রে **Refresh Token** ব্যবহার করে নতুন টোকেন জেনারেট করা হয়।
+
+### **স্টেপ ৪: Axios Instance এবং Interceptor তৈরি করা**
+
+অ্যাপ্লিকেশনের প্রতিটি API রিকোয়েস্টে টোকেন ব্যবহারের জন্য **Axios Instance** তৈরি করা হয়েছে।
+
+1. **Request Interceptor:**
+
+   - প্রতিটি রিকোয়েস্টের হেডারে **Authorization Token** যোগ করা হয়।
+
+2. **Response Interceptor:**
+   - টোকেন এক্সপায়ার হয়ে গেলে **Refresh Token** ব্যবহার করে নতুন টোকেন জেনারেট করা হয় এবং আগের রিকোয়েস্টটি পুনরায় করা হয়।
+
+**কোড উদাহরণ:**
+
+---
+
+### **স্টেপ ৫: Custom Hook (useAxios) তৈরি করা**
+
+`useAxios` হুক ব্যবহার করে সেন্ট্রালাইজড ইন্টারসেপ্টর ইমপ্লিমেন্ট করা হয়েছে।
+
+**কোড:**
+
+```jsx
+import axios from "axios";
+import { useEffect } from "react";
+import { useAuth } from './useAuth';
+
+
+
+export default function useAxios() {
+    const { auth, setAuth } = useAuth();
+
+
+
+    const api = axios.create({
+        baseURL: import.meta.env.VITE_SERVER_BASE_URL,
+    });
+
+
+    useEffect(() => {
+        const requestIntercept = api.interceptors.request.use(
+            (config) => {
+                const authToken = auth?.authToken;
+                if (authToken) {
+                    config.headers.Authorization = `Bearer ${authToken}`;
+                }
+                return config;
+            },
+            (error) => Promise.reject(error)
+        );
+
+        const responseIntercept = api.interceptors.response.use(
+            (response) => response,
+            async (error) => {
+                const originalRequest = error.config;
+
+                if (error.response?.status === 401 && !originalRequest._retry) {
+                    originalRequest._retry = true;
+
+                    try {
+                        const response = await api.post("/auth/refresh-token", {
+                            refreshToken: auth?.refreshToken,
+                        });
+
+                        const { token } = response.data;
+                        setAuth({ ...auth, authToken: token });
+
+                        originalRequest.headers.Authorization = `Bearer ${token}`;
+                        return api(originalRequest);
+                    } catch (err) {
+                        return Promise.reject(err);
+                    }
+                }
+                return Promise.reject(error);
+            }
+        );
+
+        return () => {
+            api.interceptors.request.eject(requestIntercept);
+            api.interceptors.response.eject(responseIntercept);
+        };
+    }, [auth?.authToken]);
+
+    return { api };
+};
+
+export default useAxios;
+```
+
+---
+
+### **স্টেপ ৬: সারাংশ**
+
+1. **লগইন:** ইউজার লগইন করলে **Access Token** এবং **Refresh Token** জেনারেট হয়।
+2. **Token Handling:**
+   - প্রতিটি API রিকোয়েস্টে টোকেন ব্যবহার করা হয়।
+   - টোকেন এক্সপায়ার হলে **Refresh Token** দিয়ে নতুন টোকেন আনা হয়।
+3. **Custom Hook:** `useAxios` হুক ব্যবহার করে সেন্ট্রালাইজড ইন্টারসেপ্টর ইমপ্লিমেন্ট করা হয়েছে।
+4. **ডেটা ফেচ:** টোকেনসহ প্রোফাইল ডেটা ফেচ করা হয়েছে।
+
+এই স্টেপগুলো অনুসরণ করে **Quiz Application**-এ সুরক্ষিত অথেন্টিকেশন ও অথোরাইজেশন ইমপ্লিমেন্ট করা হয়েছে।
+
+## সেকশন ৬: Functional Login Form Validation and with React Hook Form and Yup
+
+### ১. **ডিপেনডেন্সি ইন্সটল করুন**
+
+প্রথমে প্রয়োজনীয় প্যাকেজগুলো ইন্সটল করুন:
+
+```bash
+npm install react-hook-form @hookform/resolvers yup
+```
+
+---
+
+### ২. **ভ্যালিডেশন স্কিমা তৈরি করুন**
+
+ইউজার ইনপুট ভ্যালিডেশনের জন্য **Yup** ব্যবহার করা হবে।
+
+**ফাইল: `validationSchemas/loginSchema.js`**
+
+```javascript
+import * as Yup from "yup";
+
+export const loginValidationSchema = Yup.object().shape({
+  email: Yup.string()
+    .email("সঠিক ইমেইল ফরম্যাট দিন")
+    .required("ইমেইল দেওয়া আবশ্যক"),
+  password: Yup.string()
+    .min(8, "পাসওয়ার্ড অন্তত ৮ অক্ষরের হতে হবে")
+    .required("পাসওয়ার্ড আবশ্যক"),
+});
+```
+
+---
+
+### ৩. **পুনর্ব্যবহারযোগ্য ইনপুট কম্পোনেন্ট তৈরি করুন**
+
+ইনপুট ফিল্ডগুলোর জন্য একটি রিইউজেবল **TextInput** কম্পোনেন্ট তৈরি করা হলো।
+
+**ফাইল: `components/TextInput.jsx`**
+
+```javascript
+import React from "react";
+
+const TextInput = ({ label, type, id, register, error, placeholder }) => {
+  return (
+    <div className="mb-4">
+      <label htmlFor={id} className="block mb-2">
+        {label}
+      </label>
+      <input
+        id={id}
+        type={type}
+        className={`w-full px-4 py-3 rounded-lg border ${
+          error ? "border-red-500" : "border-gray-300"
+        }`}
+        placeholder={placeholder}
+        {...register(id)}
+      />
+      {error && <p className="text-red-500 text-sm mt-1">{error.message}</p>}
+    </div>
+  );
+};
+
+export default TextInput;
+```
+
+---
+
+### ৪. **লগইন ফর্ম তৈরি করুন**
+
+`react-hook-form` ব্যবহার করে **LoginForm** কম্পোনেন্টটি তৈরি করা হলো।
+
+**ফাইল: `components/LoginForm.jsx`**
+
+```javascript
+import React from "react";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { loginValidationSchema } from "../validationSchemas/loginSchema";
+import TextInput from "./TextInput";
+
+const LoginForm = ({ onLogin }) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(loginValidationSchema),
+  });
+
+  const onSubmit = (data) => {
+    onLogin(data);
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} noValidate>
+      <TextInput
+        label="ইউজারনেম অথবা ইমেইল অ্যাড্রেস দিন"
+        type="email"
+        id="email"
+        placeholder="ইউজারনেম অথবা ইমেইল"
+        register={register}
+        error={errors.email}
+      />
+      <TextInput
+        label="আপনার পাসওয়ার্ড দিন"
+        type="password"
+        id="password"
+        placeholder="পাসওয়ার্ড"
+        register={register}
+        error={errors.password}
+      />
+      <div className="mb-6 flex gap-2 items-center">
+        <input
+          type="checkbox"
+          id="admin"
+          {...register("admin")}
+          className="rounded-lg border border-gray-300"
+        />
+        <label htmlFor="admin" className="block">
+          অ্যাডমিন হিসেবে লগইন
+        </label>
+      </div>
+      <button
+        type="submit"
+        className="w-full bg-primary text-white py-3 rounded-lg mb-4"
+      >
+        সাইন ইন
+      </button>
+    </form>
+  );
+};
+
+export default LoginForm;
+```
+
+---
+
+### ৫. **LoginPage কম্পোনেন্ট তৈরি করুন**
+
+এখন **LoginForm** ব্যবহার করে **LoginPage** তৈরি করা হলো।
+
+**ফাইল: `pages/LoginPage.jsx`**
+
+```javascript
+import React from "react";
+import LoginForm from "../components/LoginForm";
+
+const LoginPage = () => {
+  const handleLogin = (data) => {
+    console.log("লগইন ডেটা সাবমিট:", data);
+
+    // এখানে API কল করে লগইন প্রক্রিয়া সম্পন্ন করুন।
+    // উদাহরণ:
+    // axios.post("/auth/login", data)
+    //   .then(response => console.log(response))
+    //   .catch(error => console.error(error));
+  };
+
+  return (
+    <div className="w-full lg:w-1/2 flex items-center justify-center p-12">
+      <div className="w-full max-w-md">
+        <h2 className="text-3xl font-bold mb-8 flex gap-2 items-center">
+          <span>স্বাগতম</span>
+          <img src="./assets/logo.svg" className="h-7" alt="লোগো" />
+        </h2>
+        <h1 className="text-5xl font-bold mb-8">সাইন ইন করুন</h1>
+        <LoginForm onLogin={handleLogin} />
+        <div className="text-center">
+          <a href="#" className="text-primary">
+            পাসওয়ার্ড ভুলে গেছেন?
+          </a>
+        </div>
+        <div className="mt-8">
+          <p className="text-center">
+            একাউন্ট নেই?{" "}
+            <a href="#" className="text-primary">
+              সাইন আপ করুন
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default LoginPage;
+```
+
+---
+
+### ৬. **Tailwind কনফিগারেশন আপডেট করুন**
+
+প্রাথমিক কালার `primary` কনফিগার করুন।
+
+**ফাইল: `tailwind.config.js`**
+
+```javascript
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        primary: "#3498db", // এখানে আপনার পছন্দের কালার সেট করুন
+      },
+    },
+  },
+  plugins: [],
+};
+```
+
+---
+
+### ৭. **অ্যাপ রান এবং টেস্ট করুন**
+
+অ্যাপ চালু করুন:
+
+```bash
+npm run dev
+```
+
+**টেস্ট করুন:**
+
+- ফর্ম সাবমিট না করে চেষ্টা করুন।
+- ভুল ইমেইল ফরম্যাট দিন।
+- ৮ অক্ষরের কম পাসওয়ার্ড দিন।
+
+---
+
+### বৈশিষ্ট্যসমূহ
+
+1. **ভালিডেশন:** ইনপুটগুলো সঠিক কিনা চেক করা।
+2. **এরর ডিসপ্লে:** প্রতিটি ইনপুটের পাশে এরর মেসেজ দেখানো।
+3. **পুনর্ব্যবহারযোগ্য কোড:** `TextInput` কম্পোনেন্ট বারবার ব্যবহার করা যায়।
+4. **প্রফেশনাল স্ট্রাকচার:** স্কেলেবল এবং মেইনটেন করা সহজ।
+
+### ধাপ ৯: কুইজ ফাংশনালিটি ইমপ্লিমেন্ট করা
+
+1. **QuizPage কম্পোনেন্ট তৈরি করুন:**
+
+```jsx
+// src/pages/QuizPage.jsx
+import React, { useState, useEffect } from "react";
+import { fetchQuizById, submitQuiz } from "../api/quizAPI";
+
+const QuizPage = () => {
+  const [questions, setQuestions] = useState([]);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [answers, setAnswers] = useState({});
+
+  useEffect(() => {
+    const fetchQuiz = async () => {
+      const response = await fetchQuizById(1); // ধরুন কুইজ আইডি 1
+      setQuestions(response.data.questions);
+    };
+
+    fetchQuiz();
+  }, []);
+
+  const handleAnswer = (questionId, answer) => {
+    setAnswers((prev) => ({ ...prev, [questionId]: answer }));
+  };
+
+  const handleSubmit = async () => {
+    const response = await submitQuiz(answers);
+    // রেসপন্স হ্যান্ডল করুন (যেমন, রেজাল্ট পেজে ন্যাভিগেট করুন)
+  };
+
+  if (questions.length === 0) {
+    return <div>লোড হচ্ছে...</div>;
+  }
+
+  return (
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold">Quiz Page</h1>
+      <div>
+        <p>{questions[currentQuestion].question}</p>
+        <div>
+          {questions[currentQuestion].options.map((option) => (
+            <button
+              key={option}
+              onClick={() =>
+                handleAnswer(questions[currentQuestion].id, option)
+              }
+            >
+              {option}
+            </button>
+          ))}
+        </div>
+        <button onClick={() => setCurrentQuestion((prev) => prev + 1)}>
+          Next
+        </button>
+      </div>
+      <button onClick={handleSubmit}>Submit</button>
+    </div>
+  );
+};
+
+export default QuizPage;
+```
+
+### ধাপ ১০: স্টাইলিং এবং চূড়ান্ত স্পর্শ
+
+1. **প্রয়োজন অনুযায়ী আপনার কম্পোনেন্টগুলোতে TailwindCSS স্টাইল প্রয়োগ করুন যাতে আপনার ডিজাইন মিলে যায়।**
+
+2. **আপনার অ্যাপ্লিকেশনটি ভালোভাবে পরীক্ষা করুন যাতে সব ফিচার ঠিকমতো কাজ করছে।**
+
+### উপসংহার
+
+এই গাইডটি Vite ব্যবহার করে একটি React প্রজেক্ট সেট আপ করা, TailwindCSS দিয়ে স্টাইল করা এবং Axios দিয়ে API কল করা সহ কুইজ অ্যাপ্লিকেশনের কিছু মূল ফিচার ইমপ্লিমেন্ট করার বেসিক বিষয়গুলো কভার করে। আপনি প্রোভাইড করা সোর্স কোড এবং লাইভ ডেমোগুলোর বিস্তারিত ডিজাইন এবং ফাংশনালিটি দেখতে পারেন। আরও উন্নত ফিচারগুলোর জন্য, আপনাকে কম্পোনেন্টগুলো উন্নত করতে, স্টেট ম্যানেজমেন্ট (যেমন, Redux) যোগ করতে এবং প্রয়োজন অনুযায়ী এজ কেসগুলোর হ্যান্ডল করতে হতে পারে।
+
+```
+
+```
+
+# Feature Implement Start (Step by Step)
+
+## সেকশন ৭: হোম পেজ ইমপ্লিমেন্টেশন (Home Page Implementation)
+
+এখন পর্যন্ত আমরা এই কোডের বিভিন্ন অংশকে মডিউলার বা কম্পোনেন্ট-ভিত্তিক ভাবে ভাগ করে একটি **HomePage** তৈরি করেছি। প্রতিটি কম্পোনেন্ট এবং তাদের ভূমিকা নিচে উল্লেখ করা হলো:
+
+---
+
+### **১. Header Component**
+
+**Header** কম্পোনেন্টটি ন্যাভিগেশন ও লগইন/লগআউট বাটনের জন্য ব্যবহার করা হয়েছে। এটি একটি কমন কম্পোনেন্ট, তাই এটি `common/Header.jsx` ফাইলে রাখা হয়েছে।
+
+```jsx
+// common/Header.jsx
+import React from "react";
+
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "./../../hooks/useAuth";
+export default function Header() {
+  const { auth, setAuth } = useAuth();
+  const navigate = useNavigate();
+
+  function handleLogout() {
+    setAuth(null);
+  }
+
+  return (
+    <header className="flex justify-between items-center mb-12">
+      <img src="./assets/logo.svg" className="h-7" />
+      <div>
+        {auth?.user ? (
+          <button
+            className="px-4 py-2 rounded hover:bg-primary hover:text-white transition-colors font-jaro"
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+        ) : (
+          <button
+            className="px-4 py-2 rounded hover:bg-primary hover:text-white transition-colors font-jaro"
+            onClick={() => navigate("/login")}
+          >
+            Login
+          </button>
+        )}
+      </div>
+    </header>
+  );
+}
+```
+
+---
+
+### **২. Footer Component**
+
+**Footer** কম্পোনেন্টটি একাধিক পেজে ব্যবহার করা যেতে পারে, তাই এটি `common/Footer.jsx` ফাইলে রাখা হয়েছে।
+
+```jsx
+// common/Footer.jsx
+import React from "react";
+
+const Footer = () => {
+  return (
+    <footer className="mt-6 mb-3 opacity-40 text-center">
+      Copyright &copy; 2024 Learn With Sumit | All Rights Reserved
+    </footer>
+  );
+};
+
+export default Footer;
+```
+
+---
+
+### **৩. UserInfo Component**
+
+ব্যবহারকারীর প্রোফাইল তথ্য দেখানোর জন্য **UserInfo** কম্পোনেন্ট ব্যবহার করা হয়েছে।
+
+```jsx
+// components/UserInfo.jsx
+import { useAuth } from "./../hooks/useAuth";
+export default function UserInfo() {
+  const { auth } = useAuth();
+  return (
+    <>
+      {auth?.user && (
+        <div className="text-center mb-12">
+          <img
+            src="./assets/avater.webp"
+            alt="Profile Picture"
+            className="w-32 h-32 rounded-full border-4 border-primary mx-auto mb-4 object-cover"
+          />
+          <p className="text-xl text-gray-600">Welcome</p>
+          <h2 className="text-4xl font-bold text-gray-700 font-jaro">
+            {auth?.user?.full_name}
+          </h2>
+        </div>
+      )}
+    </>
+  );
+}
+```
+
+---
+
+### **৪. QuizCard Component**
+
+Quiz-এর ডেটা ডাইনামিকভাবে দেখানোর জন্য **QuizCard** কম্পোনেন্ট তৈরি করা হয়েছে।
+
+```jsx
+// components/QuizCard.jsx
+import { Link } from "react-router-dom";
+export default function QuizCard({
+  quizId,
+  title,
+  description,
+  thumbnail,
+  totalQuestion,
+  isAttempted,
+}) {
+  return (
+    <Link
+      to={isAttempted ? `/quiz/${quizId}/leaderboard` : `/quiz/${quizId}`}
+      className="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow max-h-[450px] relative group cursor-pointer"
+    >
+      <div className="group-hover:scale-105 absolute transition-all text-white  text-center top-1/2 -translate-y-1/2 px-4">
+        <h1 className=" text-5xl font-jaro">
+          {title} {totalQuestion}
+        </h1>
+        <p className="mt-2 text-lg">{description}</p>
+      </div>
+      {isAttempted && (
+        <div className="hidden absolute transition-all bg-black/80 w-full h-full left-0 top-0 text-white group-hover:grid place-items-center">
+          <div>
+            <h1 className="text-3xl font-bold">Already Participated</h1>
+            <p className="text-center">Click to view your leaderboard</p>
+          </div>
+        </div>
+      )}
+
+      <img
+        src={thumbnail}
+        alt={title}
+        className="w-full h-full object-cover rounded mb-4"
+      />
+    </Link>
+  );
+}
+```
+
+---
+
+### **৫. HomePage Component**
+
+উপরের সমস্ত কম্পোনেন্টগুলো **HomePage**-এ একত্র করা হয়েছে।
+
+```jsx
+// pages/HomePage.jsx
+import { useEffect } from "react";
+import Footer from "../components/common/Footer";
+import Header from "../components/common/Header";
+import QuizCard from "../components/QuizCard";
+import UserInfo from "../components/UserInfo";
+import useAxios from "../hooks/useAxios";
+
+export default function HomePage() {
+  const { api } = useAxios();
+  const quizSet = {
+    status: "success",
+    data: [
+      {
+        id: "139561c6-7108-4635-82c2-f933f58f362c",
+        title: "Chemistry- Chemical Bond",
+        description:
+          "যদি এই ২১ টা MCQ এর উত্তর সঠিক দিতে পারো, তাহলে বুঝবে তুমি বস!",
+        thumbnail: "http://localhost:5000/images/1.jpeg",
+        status: "published",
+        created_at: "2024-12-31T02:44:58.707Z",
+        total_questions: 2,
+        total_attempts: 0,
+        is_attempted: false,
+      },
+      {
+        id: "3ac55a23-848d-486e-b820-d2c9a24bc62c",
+        title: "Chemistry- Structure of Matter",
+        description:
+          "যদি এই ৩০ টা MCQ এর উত্তর সঠিক দিতে পারো, তাহলে বুঝবে তুমি ফাটায়া দিছো!",
+        thumbnail: "http://localhost:5000/images/7.jpg",
+        status: "published",
+        created_at: "2024-12-31T02:13:52.258Z",
+        total_questions: 2,
+        total_attempts: 0,
+        is_attempted: false,
+      },
+    ],
+  };
+
+  useEffect(() => {
+    // Fetch quiz set data from server
+    async function fetchQuestionSets() {
+      try {
+        const response = await api.get(
+          `${import.meta.env.VITE_SERVER_BASE_URL}/quizzes`
+        );
+
+        console.log("Quiz set response:", response?.data);
+      } catch (error) {
+        console.error("Quiz set error:", error.message);
+      }
+    }
+    fetchQuestionSets();
+  });
+
+  return (
+    <div className="container mx-auto py-3">
+      <Header />
+      <UserInfo />
+      <main className="bg-white p-6 rounded-md h-full">
+        <section>
+          <h3 className="text-2xl font-bold mb-6">Participate In Quizees</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {quizSet.data.map((quiz) => (
+              <QuizCard
+                key={quiz.id}
+                quizId={quiz?.id}
+                title={quiz?.title}
+                description={quiz?.description}
+                thumbnail={quiz?.thumbnail}
+                totalQuestion={quiz?.total_questions}
+                isAttempted={quiz?.is_attempted}
+              />
+            ))}
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+```
+
+---
+
+### **আমরা এখন পর্যন্ত যা করেছি**
+
+1. **Header Component**: নেভিগেশন বার এবং লগইন/লগআউট বাটন তৈরি।
+2. **Footer Component**: সাধারণ ফুটার তৈরি।
+3. **UserInfo Component**: ব্যবহারকারীর প্রোফাইল তথ্য দেখানোর জন্য।
+4. **QuizCard Component**: Quiz গুলো ডাইনামিকভাবে দেখানোর জন্য।
+5. **HomePage Component**: উপরের সব কম্পোনেন্ট একত্র করে একটি পূর্ণাঙ্গ হোমপেজ তৈরি।
+
+---
+
+এখন আপনি সহজেই এই প্রজেক্টে নতুন ফিচার যোগ করতে পারবেন। 😊
+
+## সেকশন ৮: কুইজ পেজ ইমপ্লিমেন্টেশন (Quiz Page Implementation)
+
+এই ধাপে, আমরা কুইজ পেজের ডিজাইন এবং ফাংশনালিটি ইমপ্লিমেন্ট করব। এই পেজে কুইজ প্রশ্ন এবং উত্তর দেখানো হবে। প্রতিটি প্রশ্নের জন্য একটি বাটন থাকবে যা ক্লিক করলে পরবর্তী প্রশ্নে যাওয়া যাবে।
+
+অবশ্যই! এখানে আমি `QuizPage` কম্পোনেন্টটিকে ছোট ছোট কম্পোনেন্টে ভাগ করে দিয়েছি এবং প্রতিটি অংশের ব্যাখ্যা বাংলায় করেছি:
+
+### Step 1: QuizHeader কম্পোনেন্ট তৈরী
+
+```jsx
+function QuizHeader() {
+  return (
+    <div>
+      <h2 className="text-4xl font-bold mb-4">React Hooks Quiz</h2>
+      <p className="text-gray-600 mb-4">
+        A quiz on React hooks like useState, useEffect, and useContext.
+      </p>
+    </div>
+  );
+}
+```
+
+**ব্যাখ্যা:** `QuizHeader` কম্পোনেন্টটি কুইজের শিরোনাম এবং বিবরণ প্রদর্শন করবে।
+
+### Step 2: InfoBadge কম্পোনেন্ট তৈরী
+
+```jsx
+function InfoBadge({ bgColor, textColor, text }) {
+  return (
+    <div
+      className={`w-fit ${bgColor} ${textColor} text-sm font-medium px-2.5 py-0.5 rounded-full inline-block mb-2`}
+    >
+      {text}
+    </div>
+  );
+}
+```
+
+**ব্যাখ্যা:** `InfoBadge` কম্পোনেন্টটি একটি ব্যাজ প্রদর্শন করবে। এটি পুনঃব্যবহারযোগ্য এবং বিভিন্ন রঙ ও টেক্সট সহ ব্যবহার করা যাবে।
+
+### Step 3: QuizInfo কম্পোনেন্ট তৈরী
+
+```jsx
+function QuizInfo() {
+  return (
+    <div className="flex flex-col">
+      <InfoBadge
+        bgColor="bg-green-100"
+        textColor="text-green-800"
+        text="Total number of questions : 10"
+      />
+      <InfoBadge
+        bgColor="bg-blue-100"
+        textColor="text-blue-800"
+        text="Participation : 1"
+      />
+      <InfoBadge
+        bgColor="bg-gray-100"
+        textColor="text-green-800"
+        text="Remaining : 9"
+      />
+    </div>
+  );
+}
+```
+
+**ব্যাখ্যা:** `QuizInfo` কম্পোনেন্টটি বিভিন্ন তথ্য ব্যাজ প্রদর্শন করবে।
+
+### Step 4: UserAvatar কম্পোনেন্ট তৈরী
+
+```jsx
+function UserAvatar() {
+  return (
+    <div className="mt-auto flex items-center">
+      <img
+        src="./assets/avater.webp"
+        alt="Mr Hasan"
+        className="w-10 h-10 rounded-full mr-3 object-cover"
+      />
+      <span className="text-black font-semibold">Saad Hasan</span>
+    </div>
+  );
+}
+```
+
+**ব্যাখ্যা:** `UserAvatar` কম্পোনেন্টটি ব্যবহারকারীর ছবি এবং নাম প্রদর্শন করবে।
+
+### Step 5: Option কম্পোনেন্ট তৈরী
+
+```jsx
+function Option({ name, option }) {
+  return (
+    <label className="flex items-center space-x-3 py-3 px-4 bg-primary/5 rounded-md text-lg">
+      <input
+        type="checkbox"
+        name={name}
+        className="form-radio text-buzzr-purple"
+      />
+      <span>{option}</span>
+    </label>
+  );
+}
+```
+
+**ব্যাখ্যা:** `Option` কম্পোনেন্টটি প্রতিটি প্রশ্নের অপশন প্রদর্শন করবে।
+
+### Step 6: Options কম্পোনেন্ট তৈরী
+
+```jsx
+function Options() {
+  const options = ["0", "-1", "1", "1"];
+  return (
+    <div className="grid grid-cols-2 gap-4">
+      {options.map((option, index) => (
+        <Option key={index} name={`answer${index + 1}`} option={option} />
+      ))}
+    </div>
+  );
+}
+```
+
+**ব্যাখ্যা:** `Options` কম্পোনেন্টটি সকল অপশন গুলোকে প্রদর্শন করবে।
+
+### Step 7: Question কম্পোনেন্ট তৈরী
+
+```jsx
+function Question() {
+  return (
+    <div className="bg-white p-6 !pb-2 rounded-md">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-2xl font-semibold">
+          3. What is the height of an empty binary tree?
+        </h3>
+      </div>
+      <Options />
+      <NextButton />
+    </div>
+  );
+}
+```
+
+**ব্যাখ্যা:** `Question` কম্পোনেন্টটি প্রশ্ন এবং অপশন গুলো প্রদর্শন করবে।
+
+### Step 8: NextButton কম্পোনেন্ট তৈরী
+
+```jsx
+function NextButton() {
+  return (
+    <a
+      href="./result.html"
+      className="w-1/2 text-center ml-auto block bg-primary text-white py-2 px-4 rounded-md hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary mb-6 font-semibold my-8"
+    >
+      Next
+    </a>
+  );
+}
+```
+
+**ব্যাখ্যা:** `NextButton` কম্পোনেন্টটি "Next" বোতাম প্রদর্শন করবে।
+
+### Step 9: QuizPage মূল কম্পোনেন্ট
+
+```jsx
+export default function QuizPage() {
+  return (
+    <main className="max-w-8xl mx-auto h-[calc(100vh-10rem)]">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 h-full">
+        <div className="lg:col-span-1 bg-white rounded-md p-6 h-full flex flex-col">
+          <QuizHeader />
+          <QuizInfo />
+          <UserAvatar />
+        </div>
+        <div className="lg:col-span-2 bg-white">
+          <Question />
+        </div>
+      </div>
+    </main>
+  );
+}
+```
+
+**ব্যাখ্যা:** `QuizPage` মূল কম্পোনেন্টটি সমস্ত ছোট কম্পোনেন্ট গুলোকে একত্রে প্রদর্শন করবে।
+
+এইভাবে, কম্পোনেন্ট গুলোকে ছোট ছোট অংশে ভাগ করে কোডটি আরও মডুলার এবং রক্ষণাবেক্ষণযোগ্য করা হয়েছে।
+
+### স্টেপ ১০: How to send data to QuizPage from QuizCard? (React Router)
+
+There is No Relation QuizPage and QuizCard. Explain Briefly the technique in Bangla. We need send quizId to QuizPage from QuizCard.
+
+`QuizCard` থেকে `QuizPage`-এ `quizId` পাঠানোর জন্য আমরা **React Router** ব্যবহার করতে পারি। এই ক্ষেত্রে `Link` কম্পোনেন্টটি একটি নির্দিষ্ট `quizId` সহ একটি URL-এ রিডাইরেক্ট করে। `QuizPage` সেই URL থেকে `quizId` পেতে পারে। নিচে এই পুরো প্রক্রিয়া বাংলা ভাষায় ব্যাখ্যা করা হলো:
+
+---
+
+### ১. `Link` এর মাধ্যমে `quizId` পাঠানো:
+
+`QuizCard`-এ `Link` কম্পোনেন্ট ব্যবহার করে আমরা `to` প্রপার্টিতে একটি ডাইনামিক URL সেট করি। উদাহরণস্বরূপ:
+
+```jsx
+<Link to={`/quiz/${quizId}`}>
+```
+
+এখানে `/quiz/${quizId}` একটি ডাইনামিক রুট যা `quizId` এর মান URL-এ যোগ করে।
+
+---
+
+### ২. `Route` সেটআপ করা:
+
+React Router-এ `QuizPage` এর জন্য রুট কনফিগার করতে হবে। ডাইনামিক রুট প্যারামিটার ব্যবহার করে এটি করা হয়। উদাহরণ:
+
+```jsx
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import QuizPage from "./QuizPage";
+import QuizCard from "./QuizCard";
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/quiz/:quizId" element={<QuizPage />} />
+        <Route path="/" element={<QuizCard />} />
+      </Routes>
+    </Router>
+  );
+}
+
+export default App;
+```
+
+এখানে `/quiz/:quizId` হচ্ছে ডাইনামিক রুট যেখানে `:quizId` হলো একটি প্যারামিটার।
+
+---
+
+### ৩. `useParams` দিয়ে `quizId` রিড করতে:
+
+`QuizPage`-এ React Router-এর `useParams` হুক ব্যবহার করে আমরা `quizId` পেতে পারি। উদাহরণ:
+
+```jsx
+import { useParams } from "react-router-dom";
+
+export default function QuizPage() {
+  const { quizId } = useParams(); // quizId URL থেকে পাওয়া যাবে।
+
+  return (
+    <main className="max-w-8xl mx-auto h-[calc(100vh-10rem)]">
+      <h1>Quiz ID: {quizId}</h1>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 h-full">
+        <div className="lg:col-span-1 bg-white rounded-md p-6 h-full flex flex-col">
+          <QuizHeader />
+          <QuizInfo />
+          <UserAvatar />
+        </div>
+        <div className="lg:col-span-2 bg-white">
+          <Question />
+        </div>
+      </div>
+    </main>
+  );
+}
+```
+
+এখানে `useParams` React Router থেকে সরাসরি `quizId` এক্সট্র্যাক্ট করে।
+
+---
+
+### ৪. ডেটা পাঠানোর পুরো প্রক্রিয়া:
+
+1. `QuizCard`-এ একটি ডাইনামিক লিংক তৈরি করা হয়, যা `quizId` সহ `QuizPage`-এ রিডাইরেক্ট করে।
+2. React Router-এ `/quiz/:quizId` রুট সেটআপ করা হয়।
+3. `QuizPage` `useParams` ব্যবহার করে URL থেকে `quizId` পায় এবং সেই `quizId` ব্যবহার করে ডেটা বা API কল করে।
+
+---
+
+### উদাহরণ সংক্ষেপে:
+
+#### `QuizCard`:
+
+```jsx
+<Link to={`/quiz/${quizId}`}>
+  <div className="quiz-card">
+    <h1>{title}</h1>
+  </div>
+</Link>
+```
+
+#### `App.js`:
+
+```jsx
+<Routes>
+  <Route path="/quiz/:quizId" element={<QuizPage />} />
+</Routes>
+```
+
+#### `QuizPage`:
+
+```jsx
+const { quizId } = useParams();
+console.log(quizId); // URL থেকে quizId পেয়ে যাবে।
+```
+
+---
+
+### কেন এই পদ্ধতি ভালো?
+
+- **Decoupled Architecture**: `QuizCard` এবং `QuizPage` সরাসরি সংযুক্ত নয়, শুধুমাত্র URL-এর মাধ্যমে ডেটা আদান-প্রদান হয়।
+- **Reusable Components**: `QuizCard` এবং `QuizPage` একে অপরের উপর নির্ভরশীল না থাকায় সহজে পুনর্ব্যবহারযোগ্য।
+- **URL Parameters**: রাউট প্যারামিটার ব্যবহার করে ডেটা সহজে এক পেজ থেকে অন্য পেজে পাঠানো যায়।
+
+এটি একটি ক্লিন এবং রিয়্যাক্টিভ উপায় ডেটা শেয়ার করার জন্য।
+
+### But We don't want to display the quizId in url.
+
+It concerns the sever. instead of this: http://localhost:5173/quiz/3ac55a23-848d-486e-b820-d2c9a24bc62c, we can use only: http://localhost:5173/quiz/
+যদি আপনি `quizId` URL-এ প্রদর্শন না করতে চান এবং শুধুমাত্র `http://localhost:5173/quiz/` ব্যবহার করতে চান, তবে ডেটা পাঠানোর জন্য `React Router`-এর **state** প্রপার্টি ব্যবহার করতে পারেন। এই পদ্ধতিতে `quizId` সরাসরি URL-এ দেখাবে না, বরং `Link` কম্পোনেন্টের মাধ্যমে `state` প্রপার্টিতে পাঠানো হবে এবং `QuizPage`-এ এটি অ্যাক্সেস করা যাবে।
+
+---
+
+### এই পদ্ধতির ধাপসমূহ:
+
+---
+
+#### ১. `Link` এর মাধ্যমে ডেটা পাঠানো (State ব্যবহার করে):
+
+`Link` কম্পোনেন্টের `state` প্রপার্টিতে `quizId` সহ প্রয়োজনীয় ডেটা পাঠাতে পারেন। উদাহরণ:
+
+```jsx
+<Link
+  to="/quiz"
+  state={{ quizId }}
+  className="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow max-h-[450px] relative group cursor-pointer"
+>
+  <div className="group-hover:scale-105 absolute transition-all text-white  text-center top-1/2 -translate-y-1/2 px-4">
+    <h1 className=" text-5xl font-jaro">{title}</h1>
+    <p className="mt-2 text-lg">{description}</p>
+  </div>
+  <img
+    src={thumbnail}
+    alt={title}
+    className="w-full h-full object-cover rounded mb-4"
+  />
+</Link>
+```
+
+এখানে `to="/quiz"` রুট ঠিক থাকে, কিন্তু `quizId` `state` প্রপার্টির মাধ্যমে পাঠানো হয়।
+
+---
+
+#### ২. `useLocation` দিয়ে ডেটা রিসিভ করা:
+
+`QuizPage`-এ `useLocation` হুক ব্যবহার করে `state` থেকে ডেটা অ্যাক্সেস করা যায়। উদাহরণ:
+
+```jsx
+import { useLocation } from "react-router-dom";
+
+export default function QuizPage() {
+  const location = useLocation();
+  const { quizId } = location.state || {}; // State থেকে quizId পাওয়া যাচ্ছে
+
+  return (
+    <main className="max-w-8xl mx-auto h-[calc(100vh-10rem)]">
+      <h1>Quiz ID: {quizId}</h1>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 h-full">
+        <div className="lg:col-span-1 bg-white rounded-md p-6 h-full flex flex-col">
+          <QuizHeader />
+          <QuizInfo />
+          <UserAvatar />
+        </div>
+        <div className="lg:col-span-2 bg-white">
+          <Question />
+        </div>
+      </div>
+    </main>
+  );
+}
+```
+
+এখানে:
+
+- `useLocation` হুক URL-এর সাথে পাঠানো `state` এক্সেস করে।
+- `quizId` অ্যাক্সেস করতে `location.state.quizId` ব্যবহার করা হয়।
+
+---
+
+#### ৩. `Route` সেটআপ:
+
+React Router-এ `/quiz` রুট কনফিগার করতে হবে। এখানে `quizId` URL-এ নেই, শুধুমাত্র `state` প্রপার্টিতে থাকে:
+
+```jsx
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import QuizPage from "./QuizPage";
+import QuizCard from "./QuizCard";
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/quiz" element={<QuizPage />} />
+        <Route path="/" element={<QuizCard />} />
+      </Routes>
+    </Router>
+  );
+}
+
+export default App;
+```
+
+---
+
+### কেন `state` প্রপার্টি ব্যবহার করবেন?
+
+1. **URL পরিষ্কার রাখে**: `quizId` URL-এ দেখানো হয় না, যা সিকিউরিটির জন্য ভালো।
+2. **Server Concerns**: যেহেতু `quizId` ক্লায়েন্ট-সাইডে থাকে, এটি সার্ভার সম্পর্কিত কোনো সমস্যা তৈরি করে না।
+3. **Dynamic Data Passing**: `state` প্রপার্টির মাধ্যমে যেকোনো ডেটা ডাইনামিকভাবে পাঠানো যায়।
+
+---
+
+### ডেটা পাঠানোর পুরো প্রক্রিয়া:
+
+1. `QuizCard` থেকে `Link`-এর `state` প্রপার্টিতে `quizId` সহ ডেটা পাঠানো হয়।
+2. React Router-এ `/quiz` রুট সেটআপ করা হয়।
+3. `QuizPage`-এ `useLocation` ব্যবহার করে `state` থেকে `quizId` রিসিভ করা হয়।
+
+---
+
+### উদাহরণ সংক্ষেপে:
+
+#### `QuizCard`:
+
+```jsx
+<Link to="/quiz" state={{ quizId }}>
+  <div className="quiz-card">
+    <h1>{title}</h1>
+  </div>
+</Link>
+```
+
+#### `App.js`:
+
+```jsx
+<Routes>
+  <Route path="/quiz" element={<QuizPage />} />
+</Routes>
+```
+
+#### `QuizPage`:
+
+```jsx
+import { useLocation } from "react-router-dom";
+
+const { quizId } = useLocation().state || {};
+console.log(quizId); // Quiz ID এখানে পাওয়া যাবে।
+```
+
+এটি একটি ক্লিন ও সিকিউর পদ্ধতি যেখানে `quizId` URL-এ প্রকাশিত হয় না।
+
+## Imagine there are questions of array. How we can display one by one question with next button. and display how many question remaining and how many Question participated.
+
+To achieve this functionality, you can create a simple React application. Here’s how you can structure it:
+
+### 1. **Setup State for Questions**
+
+You need to track:
+
+- The current question index.
+- How many questions are remaining.
+- How many questions the user has participated in.
+
+### 2. **State Variables**
+
+Define these states:
+
+- `questions`: An array of questions.
+- `currentIndex`: The index of the current question.
+- `participatedCount`: Number of questions participated in.
+
+### 3. **Next Button Functionality**
+
+When the "Next" button is clicked:
+
+- Increment the `currentIndex`.
+- Update `participatedCount`.
+
+### 4. **Example Code**
+
+Here’s a simple implementation:
+
+```jsx
+import React, { useState } from "react";
+
+const QuizApp = () => {
+  const questions = [
+    "What is the capital of Bangladesh?",
+    "What is 2 + 2?",
+    "Who wrote the novel '1984'?",
+    "What is the color of the sky?",
+  ];
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [participatedCount, setParticipatedCount] = useState(0);
+
+  const handleNext = () => {
+    if (currentIndex < questions.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+      setParticipatedCount(participatedCount + 1);
+    } else {
+      alert("You've reached the end of the questions!");
+    }
+  };
+
+  return (
+    <div style={{ padding: "20px", textAlign: "center" }}>
+      <h2>Quiz App</h2>
+      <div>
+        <p>
+          <strong>Question:</strong> {questions[currentIndex]}
+        </p>
+        <p>
+          <strong>Remaining:</strong> {questions.length - (currentIndex + 1)}
+        </p>
+        <p>
+          <strong>Participated:</strong> {participatedCount}
+        </p>
+      </div>
+      <button onClick={handleNext} style={{ marginTop: "10px" }}>
+        Next
+      </button>
+    </div>
+  );
+};
+
+export default QuizApp;
+```
+
+### 5. **How It Works**
+
+1. **Initial States**:
+   - `currentIndex` starts at 0.
+   - `participatedCount` starts at 0.
+2. **Display Questions**:
+   - The current question is shown based on `currentIndex`.
+3. **Update States on Next**:
+   - `handleNext` increments `currentIndex` and `participatedCount`.
+
+### 6. **Output**
+
+- Displays the current question.
+- Shows how many questions are remaining.
+- Tracks how many questions the user has participated in.
+
+You can further enhance this by adding features like:
+
+- Showing answers.
+- Allowing users to go back to previous questions.
+- Tracking scores.

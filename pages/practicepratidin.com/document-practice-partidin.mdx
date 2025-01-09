@@ -1733,3 +1733,1171 @@ You can further enhance this by adding features like:
 - Showing answers.
 - Allowing users to go back to previous questions.
 - Tracking scores.
+
+### অপশনগুলোর অবস্থান এলোমেলোভাবে পরিবর্তন করবেন কীভাবে?
+
+প্রতিটি প্রশ্নের অপশনগুলো এলোমেলোভাবে দেখানোর জন্য আপনাকে একটি **শাফল (shuffle)** ফাংশন ব্যবহার করতে হবে। এই ফাংশন অপশনগুলোর অ্যারে (array) এলোমেলোভাবে সাজিয়ে দেবে। নিচে এটি করার পদ্ধতি দেখানো হলো:
+
+---
+
+### ১. **শাফল ফাংশন**
+
+প্রথমে একটি ফাংশন তৈরি করুন, যা অপশনগুলোর অ্যারে এলোমেলোভাবে সাজাবে:
+
+```jsx
+const shuffleArray = (array) => {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1)); // এলোমেলো ইনডেক্স
+    [array[i], array[j]] = [array[j], array[i]]; // উপাদান পরিবর্তন
+  }
+  return array;
+};
+```
+
+---
+
+### ২. **কোডে শাফল যুক্ত করা**
+
+আপনার `Question` কম্পোনেন্টে অপশনগুলো শাফল করার জন্য `shuffleArray` ফাংশন ব্যবহার করুন।
+
+#### আপডেটেড কোড:
+
+```javascript
+import { useState, useEffect } from "react";
+import NextButton from "./NextButton";
+import Options from "./Options";
+
+function shuffleArray(array) {
+  const shuffled = [...array]; // অ্যারেটির কপি তৈরি করুন, যাতে মূল ডেটা পরিবর্তন না হয়
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1)); // এলোমেলো ইনডেক্স
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; // উপাদান পরিবর্তন
+  }
+  return shuffled;
+}
+
+export default function Question({ questions = [] }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [participated, setParticipated] = useState(0);
+  const [shuffledOptions, setShuffledOptions] = useState([]);
+
+  useEffect(() => {
+    if (questions[currentIndex]?.options) {
+      // প্রশ্ন পরিবর্তন হলে অপশনগুলো শাফল করুন
+      setShuffledOptions(shuffleArray(questions[currentIndex].options));
+    }
+  }, [currentIndex, questions]);
+
+  function handleNext() {
+    if (currentIndex < questions.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+      setParticipated(participated + 1);
+    } else {
+      console.log("কুইজ শেষ");
+    }
+  }
+
+  const currentQuestion = questions[currentIndex];
+
+  return (
+    <div className="bg-white p-6 rounded-md">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-2xl font-semibold">
+          {currentQuestion?.question || "কোন প্রশ্ন নেই"}
+        </h3>
+        <p>
+          <strong>বাকি প্রশ্ন:</strong> {questions.length - (currentIndex + 1)}
+          {" | "}
+          <strong>উত্তর দিয়েছেন:</strong> {participated}
+        </p>
+      </div>
+      {/* অপশনগুলো শাফল করার পর Options কম্পোনেন্টে পাঠানো */}
+      <Options options={shuffledOptions} />
+      <NextButton
+        onNext={handleNext}
+        disabled={currentIndex >= questions.length - 1}
+      />
+    </div>
+  );
+}
+```
+
+---
+
+### ৩. **Options কম্পোনেন্ট আপডেট**
+
+`Options` কম্পোনেন্ট যেন শাফল করা অপশনগুলো সঠিকভাবে দেখায় তা নিশ্চিত করুন:
+
+```javascript
+export default function Options({ options = [] }) {
+  return (
+    <div className="mb-4">
+      {options.length > 0 ? (
+        <ul className="list-disc ml-6">
+          {options.map((option, index) => (
+            <li key={index} className="mb-2">
+              {option}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-gray-500">কোন অপশন নেই</p>
+      )}
+    </div>
+  );
+}
+```
+
+---
+
+### কিভাবে এটি কাজ করে:
+
+1. **শাফলিং (Shuffling):**
+
+   - যখনই `currentIndex` পরিবর্তন হবে, `useEffect` চালু হবে এবং অপশনগুলো এলোমেলোভাবে সাজাবে।
+
+2. **মূল ডেটা অক্ষুণ্ণ রাখা:**
+
+   - `questions` অ্যারে পরিবর্তন না করে, কপি তৈরি করে শাফল করা হয়।
+
+3. **অপশন আপডেট:**
+   - শাফল করা অপশন `Options` কম্পোনেন্টে পাঠানো হয়।
+
+---
+
+### উদাহরণ ইনপুট:
+
+```javascript
+const questionsArray = [
+  {
+    question: "বাংলাদেশের রাজধানী কী?",
+    options: ["ঢাকা", "চট্টগ্রাম", "খুলনা", "সিলেট"],
+  },
+  {
+    question: "২ + ২ কত?",
+    options: ["৩", "৪", "৫", "৬"],
+  },
+];
+```
+
+---
+
+### উদাহরণ আউটপুট:
+
+প্রথম প্রশ্নের জন্য অপশনগুলো এলোমেলোভাবে হতে পারে:
+
+- `"সিলেট", "ঢাকা", "খুলনা", "চট্টগ্রাম"`
+
+দ্বিতীয় প্রশ্নের জন্য:
+
+- `"৫", "৪", "৩", "৬"`
+
+প্রতিবার প্রশ্ন লোড করার সময় অপশনগুলোর ক্রম এলোমেলোভাবে পরিবর্তিত হবে।
+
+নিচের কোডটি ব্যাখ্যা করা হচ্ছে, যেখানে **Checkbox** ব্যবহার করা হয়েছে, তবে এর কার্যকারিতা **Radio Button**-এর মতো। অর্থাৎ, একটি অপশন নির্বাচন করার পর এটি আনডু (অপসারণ) করা যাবে না, কিন্তু অন্য অপশন সিলেক্ট করা যাবে।
+
+---
+
+## ইউজারের উত্তর সংগ্রহ এবং সাবমিট করা, রি-ডাইরেক্ট করে রেজাল্ট পেজে সঠিক ও ভুল উত্তর প্রদর্শন
+
+### ১. কোড কাঠামো এবং ফাংশনালিটি ব্যাখ্যা
+
+আমাদের কোডে মোটামুটি তিনটি প্রধান কম্পোনেন্ট রয়েছে:
+
+1. **Question.jsx**: এটি মূল প্রশ্ন দেখানোর কম্পোনেন্ট।
+2. **Options.jsx**: এটি অপশনগুলো দেখানোর কম্পোনেন্ট।
+3. **NextButton.jsx**: এটি পরবর্তী প্রশ্নে যাওয়ার জন্য বাটন।
+
+### ২. কোড আপডেট এবং নতুন ফিচার যুক্ত করা
+
+#### ২.১. প্রশ্নের অপশন নির্বাচন এবং উত্তর সংগ্রহ
+
+প্রত্যেক প্রশ্নের জন্য অপশন নির্বাচন করা এবং তা সংগ্রহ করা দরকার। আমরা `useState` হুকে প্রতিটি প্রশ্নের জন্য ব্যবহারকারীর নির্বাচিত উত্তর সংরক্ষণ করব।
+
+```javascript
+import { useEffect, useState } from "react";
+import shuffleArray from "../../utils/shuffleArray";
+import Options from "./Options";
+
+export default function Question({ questions = [] }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [participated, setParticipated] = useState(0);
+  const [shuffledOptions, setShuffledOptions] = useState([]);
+  const [answers, setAnswers] = useState({}); // উত্তর সংরক্ষণের জন্য স্টেট
+
+  useEffect(() => {
+    if (questions[currentIndex]?.options) {
+      setShuffledOptions(shuffleArray(questions[currentIndex].options));
+    }
+  }, [currentIndex, questions]);
+
+  function handleNext() {
+    if (currentIndex < questions.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+      setParticipated(participated + 1);
+    } else {
+      handleSubmit();
+    }
+  }
+
+  function handleAnswer(questionId, selectedAnswer) {
+    setAnswers({
+      ...answers,
+      [questionId]: selectedAnswer,
+    });
+  }
+
+  async function handleSubmit() {
+    const quizId = "3ac55a23-848d-486e-b820-d2c9a24bc62c"; // আপনার কুইজ ID
+    const data = { answers };
+    try {
+      const response = await api.post(
+        `${import.meta.env.VITE_SERVER_URL}/api/quizzes/${quizId}/attempt`,
+        data
+      );
+      console.log("Quiz submitted", response.data);
+      // রেজাল্ট পেজে নিয়ে যাওয়া
+      window.location.href = "/result";
+    } catch (error) {
+      console.error("Error submitting quiz", error);
+    }
+  }
+
+  const currentQuestion = questions[currentIndex];
+
+  return (
+    <div className="bg-white p-6 rounded-md">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-2xl font-semibold">
+          Q{currentIndex + 1}.{" "}
+          {currentQuestion?.question || "No question available"}
+        </h3>
+      </div>
+      <p className="text-xs text-gray-500 mb-4">
+        Remaining: {questions.length - (currentIndex + 1)} | Participated:{" "}
+        {participated}
+      </p>
+      <Options
+        options={shuffledOptions}
+        onNext={handleNext}
+        currentIndex={currentIndex}
+        questions={questions}
+        onAnswer={handleAnswer}
+      />
+    </div>
+  );
+}
+```
+
+#### ২.২. অপশন নির্বাচন ফাংশনালিটি (Options.jsx এবং Option.jsx)
+
+এখানে আমরা `onAnswer` ফাংশনটি ব্যবহার করে নির্বাচিত অপশনের মান সংগ্রহ করব।
+
+**Options.jsx**
+
+```javascript
+import NextButton from "./NextButton";
+import Option from "./Option";
+
+export default function Options({
+  options = [],
+  onNext,
+  currentIndex,
+  questions,
+  onAnswer,
+}) {
+  return (
+    <>
+      <div className="grid grid-cols-2 gap-4">
+        {options.map((option, index) => (
+          <Option
+            key={index}
+            name={option}
+            option={option}
+            onAnswer={onAnswer}
+            questionId={questions[currentIndex].id}
+          />
+        ))}
+      </div>
+      <NextButton
+        onNext={onNext}
+        currentIndex={currentIndex}
+        totalQ={questions?.length}
+      />
+    </>
+  );
+}
+```
+
+**Option.jsx**
+
+```javascript
+import { useState } from "react";
+
+export default function Option({ name, option, onAnswer, questionId }) {
+  const [isSelected, setIsSelected] = useState(false);
+
+  const handleChange = () => {
+    setIsSelected(true);
+    onAnswer(questionId, option);
+  };
+
+  return (
+    <label className="flex items-center space-x-3 py-3 px-4 bg-primary/5 rounded-md text-lg">
+      <input
+        type="checkbox"
+        name={name}
+        className="form-checkbox text-buzzr-purple"
+        checked={isSelected}
+        onChange={handleChange}
+        disabled={isSelected}
+      />
+      <span>{option}</span>
+    </label>
+  );
+}
+```
+
+#### ২.৩. Circular Progress Bar ইনস্টল এবং ব্যবহার
+
+আমরা `react-circular-progressbar` লাইব্রেরি ব্যবহার করব।
+
+```bash
+npm install react-circular-progressbar
+```
+
+**Result.jsx**
+
+```javascript
+import { CircularProgressbar } from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
+
+export default function Result({ resultData }) {
+  const { percentage, correct_answers, submitted_answers } = resultData;
+
+  return (
+    <div className="result-page">
+      <h2>Quiz Result</h2>
+      <div style={{ width: 200, height: 200 }}>
+        <CircularProgressbar value={percentage} text={`${percentage}%`} />
+      </div>
+      <h3>Score: {percentage}%</h3>
+      <h4>Correct Answers: {correct_answers.length}</h4>
+      <h4>
+        Incorrect Answers: {submitted_answers.length - correct_answers.length}
+      </h4>
+      <div className="answers">
+        {submitted_answers.map((answer, index) => (
+          <div key={index} className="answer">
+            <p>Question ID: {answer.question_id}</p>
+            <p>Your Answer: {answer.answer}</p>
+            <p>
+              Correct Answer:{" "}
+              {
+                correct_answers.find(
+                  (ca) => ca.question_id === answer.question_id
+                )?.answer
+              }
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+### ৩. ডকুমেন্টেশন
+
+#### ৩.১. কোডের বিভিন্ন অংশের ব্যাখ্যা
+
+1. **Question.jsx**:
+
+   - `useEffect`: প্রশ্ন পরিবর্তন হলে অপশনগুলো শাফল করা হয়।
+   - `handleNext`: পরবর্তী প্রশ্নে যাওয়ার ফাংশন।
+   - `handleAnswer`: নির্বাচিত উত্তর সংগ্রহ করার ফাংশন।
+   - `handleSubmit`: সমস্ত উত্তর সার্ভারে পাঠানোর ফাংশন।
+
+2. **Options.jsx**:
+
+   - `onAnswer`: নির্বাচিত অপশন সংগ্রহ করার জন্য `onAnswer` ফাংশন ব্যবহার করা হয়।
+
+3. **Option.jsx**:
+
+   - `useState`: অপশন নির্বাচন করা হয়েছে কিনা তা সংরক্ষণ করা হয়।
+   - `handleChange`: অপশন নির্বাচন করার ফাংশন।
+
+4. **Result.jsx**:
+   - `CircularProgressbar`: ব্যবহারকারীর স্কোর প্রদর্শনের জন্য।
+
+#### ৩.২. ফিচার এবং ফাংশনালিটি
+
+1. প্রশ্নের অপশন নির্বাচন এবং উত্তর সংগ্রহ।
+2. পরবর্তী প্রশ্নে যাওয়া এবং কুইজ সম্পন্ন হলে উত্তর সার্ভারে পাঠানো।
+3. রেজাল্ট পেজে সঠিক এবং ভুল উত্তর প্রদর্শন।
+4. Circular Progress Bar ব্যবহার করে ব্যবহারকারীর পারফরমেন্স গ্রাফিক্যালি দেখানো।
+
+### ৪. উপসংহার
+
+এই ডকুমেন্টেশন এবং কোড আপডেটের মাধ্যমে, আমরা কুইজ কম্পোনেন্টের ফিচার এবং ফাংশনালিটি সফলভাবে যুক্ত করেছি এবং কুইজের রেজাল্ট পেজে ব্যবহারকারীর পারফরমেন্স দেখানোর ব্যবস্থা করেছি।
+
+নিচে উল্লেখ করা সমস্যাগুলো সমাধান করার জন্য আমরা কোড আপডেট করব এবং প্রতিটি ধাপ বাংলায় ব্যাখ্যা করব।
+
+---
+
+### **সমস্যা ১:**
+
+**ব্যবহারকারী একাধিক অপশন সিলেক্ট করতে পারছেন, কিন্তু আমরা চাই ব্যবহারকারী শুধুমাত্র একটি অপশন সিলেক্ট করতে পারবেন। একবার একটি অপশন সিলেক্ট করার পর, অন্য অপশন সিলেক্ট করার সুযোগ থাকবে না।**
+
+**সমাধান:**  
+আমরা `Options` এবং `Option` কম্পোনেন্ট আপডেট করব, যাতে একবার একটি অপশন সিলেক্ট হলে বাকিগুলো নিষ্ক্রিয় (disabled) হয়ে যায়।
+
+---
+
+### **সমস্যা ২:**
+
+**নতুন প্রশ্ন এবং অপশন আসার পরেও আগের সিলেক্টেড অপশন চেকড থাকে। নতুন প্রশ্ন আসলে এই সিলেক্টেড অপশনগুলো রিসেট হওয়া উচিত।**
+
+**সমাধান:**  
+আমরা `Options` কম্পোনেন্ট এবং `Option` কম্পোনেন্ট আপডেট করব, যাতে নতুন প্রশ্ন লোড হলে সিলেক্টেড অপশনগুলো রিসেট হয়।
+
+---
+
+### ধাপে ধাপে কোড আপডেট ও ব্যাখ্যা
+
+#### **ধাপ ১:** `Options.jsx` এ স্টেট যোগ করা
+
+আমরা `Options` কম্পোনেন্টে একটি স্টেট যোগ করব, যা কন্ট্রোল করবে কোন অপশন সিলেক্ট হয়েছে।
+
+```jsx
+import { useState } from "react";
+import NextButton from "./NextButton";
+import Option from "./Option";
+
+export default function Options({
+  options = [],
+  onNext,
+  currentIndex,
+  questions,
+  onAnswer,
+}) {
+  const [selectedOption, setSelectedOption] = useState(null); // সিলেক্টেড অপশন ট্র্যাক করবে
+
+  function handleOptionSelect(option) {
+    setSelectedOption(option); // সিলেক্টেড অপশন সেট করা
+    onAnswer(questions[currentIndex]?.id, option); // প্যারেন্টে উত্তর পাঠানো
+  }
+
+  return (
+    <>
+      <div className="grid grid-cols-2 gap-4">
+        {options.map((option, index) => (
+          <Option
+            key={index}
+            name={option}
+            option={option}
+            isDisabled={!!selectedOption} // একবার সিলেক্ট হলে বাকিগুলো নিষ্ক্রিয়
+            isSelected={selectedOption === option} // চেকড স্টেট
+            onSelect={() => handleOptionSelect(option)}
+          />
+        ))}
+      </div>
+      <NextButton
+        onNext={() => {
+          setSelectedOption(null); // নতুন প্রশ্নে যাওয়ার সময় রিসেট
+          onNext();
+        }}
+        currentIndex={currentIndex}
+        totalQ={questions?.length}
+      />
+    </>
+  );
+}
+```
+
+#### **ধাপ ২:** `Option.jsx` আপডেট করা
+
+`Option` কম্পোনেন্টে নতুন প্রপস (`isDisabled`, `isSelected`) হ্যান্ডল করব।
+
+```jsx
+export default function Option({
+  name,
+  option,
+  isDisabled,
+  isSelected,
+  onSelect,
+}) {
+  return (
+    <label
+      className={`flex items-center space-x-3 py-3 px-4 rounded-md text-lg ${
+        isSelected ? "bg-primary text-white" : "bg-primary/5"
+      }`}
+    >
+      <input
+        type="radio" // চেকবক্স পরিবর্তন করে রেডিও বাটন করা
+        name={name}
+        checked={isSelected} // চেকড অবস্থা
+        disabled={isDisabled} // নিষ্ক্রিয় অবস্থা
+        onChange={onSelect} // সিলেক্ট করা হ্যান্ডলিং
+        className="form-radio text-buzzr-purple"
+      />
+      <span>{option}</span>
+    </label>
+  );
+}
+```
+
+#### **ধাপ ৩:** `handleNext` ফাংশনে রিসেট যোগ করা
+
+`handleNext` ফাংশনে সিলেক্টেড অপশন রিসেট করার ব্যবস্থা করব। এটি `Options` এ করা হলেও নিশ্চিত করার জন্য `Question` কম্পোনেন্টেও এ ফাংশন নিশ্চিত করব।
+
+```jsx
+function handleNext() {
+  if (currentIndex < questions.length - 1) {
+    setCurrentIndex(currentIndex + 1);
+    setParticipated(participated + 1);
+  } else {
+    handleSubmit();
+  }
+}
+```
+
+#### **ধাপ ৪:** কোড টেস্ট করা
+
+আপডেটেড কোডে নিচের দুটি ফিচার যুক্ত হয়েছে:
+
+1. একবার একটি অপশন সিলেক্ট হলে বাকিগুলো নিষ্ক্রিয় হবে।
+2. নতুন প্রশ্ন লোড হলে সিলেক্টেড অপশনগুলো রিসেট হবে।
+
+---
+
+### **আপডেটেড কোডের সুবিধা**
+
+- ব্যবহারকারী শুধুমাত্র একটি অপশন সিলেক্ট করতে পারবেন।
+- নতুন প্রশ্ন লোড হলে আগের সিলেক্টেড অপশন রিসেট হবে।
+
+যদি কোনও অংশে আরও উন্নয়নের প্রয়োজন হয়, জানাতে ভুলবেন না! 😊
+
+## Result Page Implementation
+
+আপনার কোডকে ছোট ছোট উপাদানে ভাগ করা এবং পুনরায় ব্যবহারযোগ্য করা অবশ্যই ভালো অভ্যাস। এখানে `/result` পেজের জন্য কিভাবে আপনার কোডকে বিভিন্ন কম্পোনেন্টে ভাগ করা যায় তা দেখানো হলো:
+
+### ১. `ResultPage.js`
+
+এই কম্পোনেন্টটি সকল অন্যান্য কম্পোনেন্টকে একত্রিত করে।
+
+```jsx
+import React from "react";
+import Logo from "./Logo";
+import QuizSummary from "./QuizSummary";
+import QuestionList from "./QuestionList";
+
+const ResultPage = () => {
+  return (
+    <div className="flex min-h-screen overflow-hidden">
+      <Logo />
+      <QuizSummary />
+      <QuestionList />
+    </div>
+  );
+};
+
+export default ResultPage;
+```
+
+### ২. `Logo.js`
+
+এই কম্পোনেন্টটি লোগো প্রদর্শনের জন্য।
+
+```jsx
+import React from "react";
+
+const Logo = () => {
+  return (
+    <img
+      src="./assets/logo-white.svg"
+      className="max-h-11 fixed left-6 top-6 z-50"
+      alt="Logo"
+    />
+  );
+};
+
+export default Logo;
+```
+
+### ৩. `QuizSummary.js`
+
+এই কম্পোনেন্টটি বাম পাশে কুইজের সারাংশ প্রদর্শন করে।
+
+```jsx
+import React from "react";
+import { useNavigate } from "react-router-dom";
+
+const QuizSummary = () => {
+  const navigate = useNavigate();
+
+  return (
+    <div className="max-h-screen overflow-hidden hidden lg:flex lg:w-1/2 bg-primary flex-col justify-center p-12 relative">
+      <div>
+        <div className="text-white">
+          <div>
+            <h2 className="text-4xl font-bold mb-2">React Hooks Quiz</h2>
+            <p>
+              A quiz on React hooks like useState, useEffect, and useContext.
+            </p>
+          </div>
+
+          <div className="my-6 flex items-center">
+            <div className="w-1/2">
+              <div className="flex gap-6 my-6">
+                <div>
+                  <p className="font-semibold text-2xl my-0">10</p>
+                  <p className="text-gray-300">Questions</p>
+                </div>
+
+                <div>
+                  <p className="font-semibold text-2xl my-0">8</p>
+                  <p className="text-gray-300">Correct</p>
+                </div>
+
+                <div>
+                  <p className="font-semibold text-2xl my-0">2</p>
+                  <p className="text-gray-300">Wrong</p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => navigate("/leaderboard_page")}
+                className="bg-secondary py-3 rounded-md hover:bg-secondary/90 transition-colors text-lg font-medium underline text-white"
+              >
+                View Leaderboard
+              </button>
+            </div>
+
+            <div className="w-1/2 bg-primary/80 rounded-md border border-white/20 flex items-center p-4">
+              <div className="flex-1">
+                <p className="text-2xl font-bold">5/10</p>
+                <p>Your Mark</p>
+              </div>
+              <div>
+                <img
+                  src="./assets/icons/circular-progressbar.svg"
+                  className="h-20"
+                  alt="Progress"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default QuizSummary;
+```
+
+### ৪. `QuestionList.js`
+
+এই কম্পোনেন্টটি প্রশ্নগুলির তালিকা প্রদর্শন করে।
+
+```jsx
+import React from "react";
+import Question from "./Question";
+
+const QuestionList = () => {
+  const questions = [
+    {
+      id: 1,
+      text: "Which of the following is NOT a binary tree traversal method?",
+      options: ["Inorder", "Preorder", "Postorder", "Crossorder"],
+      correctAnswer: "Crossorder",
+      userAnswer: "Inorder",
+    },
+    {
+      id: 2,
+      text: "What is the maximum number of nodes at level 'L' in a binary tree?",
+      options: ["2^L", "L", "2^(L-1)", "2L"],
+      correctAnswer: "2^L",
+      userAnswer: "2^L",
+    },
+    {
+      id: 3,
+      text: "What is the height of an empty binary tree?",
+      options: ["0", "-1", "1", "Undefined"],
+      correctAnswer: "0",
+      userAnswer: "0",
+    },
+  ];
+
+  return (
+    <div className="max-h-screen md:w-1/2 flex items-center justify-center h-full p-8">
+      <div className="h-[calc(100vh-50px)] overflow-y-scroll">
+        <div className="px-4">
+          {questions.map((question) => (
+            <Question key={question.id} question={question} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default QuestionList;
+```
+
+### ৫. `Question.js`
+
+এই কম্পোনেন্টটি একটি নির্দিষ্ট প্রশ্ন প্রদর্শন করে।
+
+```jsx
+import React from "react";
+
+const Question = ({ question }) => {
+  return (
+    <div className="rounded-lg overflow-hidden shadow-sm mb-4">
+      <div className="bg-white p-6 !pb-2">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-semibold">
+            {question.id}. {question.text}
+          </h3>
+        </div>
+        <div className="space-y-2">
+          {question.options.map((option, index) => (
+            <label key={index} className="flex items-center space-x-3">
+              <input
+                type="radio"
+                name={`answer${question.id}`}
+                className="form-radio text-buzzr-purple"
+                defaultChecked={option === question.userAnswer}
+                disabled
+              />
+              <span>{option}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+      <div className="flex space-x-4 bg-primary/10 px-6 py-2">
+        <button className="text-red-600 hover:text-red-800 font-medium">
+          Delete
+        </button>
+        <button className="text-primary hover:text-primary/80 font-medium">
+          Edit Question
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default Question;
+```
+
+এই পদ্ধতিতে, প্রতিটি কম্পোনেন্ট নির্দিষ্ট একটি অংশের জন্য দায়ী, যা পরিচালনা ও রক্ষণাবেক্ষণ করা সহজ করে। আপনি প্রয়োজনে আরও কম্পোনেন্ট ভাগ করতে পারেন বা বৈশিষ্ট্য যোগ করতে পারেন।
+
+## How implement a logic here. to height header and footer. in "/result" route.
+
+To conditionally hide the `Header` component and a potential `Footer` on the `/result` route while keeping them visible on other routes, you can use the `useLocation` hook from `react-router-dom`. This allows you to check the current route and apply conditional rendering logic.
+
+Here’s the updated `PrivateRoutes` component:
+
+```javascript
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+import Header from "../components/common/Header";
+import { useAuth } from "../hooks/useAuth";
+
+export default function PrivateRoutes() {
+  const { auth } = useAuth();
+  const location = useLocation();
+
+  // Determine if the current route is "/result"
+  const isResultRoute = location.pathname === "/result";
+
+  return (
+    <>
+      {auth?.user ? (
+        <div className="container">
+          {/* Conditionally render Header */}
+          {!isResultRoute && <Header />}
+          <main
+            className={`mx-auto max-w-[1020px] ${
+              isResultRoute ? "pt-0 pb-0" : "pt-4 pb-4"
+            }`}
+          >
+            <div>
+              <Outlet />
+            </div>
+          </main>
+        </div>
+      ) : (
+        <Navigate to="/login" />
+      )}
+    </>
+  );
+}
+```
+
+### Explanation:
+
+1. **`useLocation`**: This hook provides access to the current URL, allowing us to check if the route is `/result`.
+2. **`isResultRoute`**: A boolean variable checks if the current path matches `/result`.
+3. **Conditional Rendering**:
+   - The `Header` component is rendered only if the route is not `/result`.
+   - Adjust padding (`pt-0 pb-0` for `/result` or default spacing otherwise) in the `main` element for consistent layout.
+
+This approach keeps your logic clean and focused while ensuring the `Header` and `Footer` visibility adjusts dynamically based on the route. Let me know if you have a footer to integrate as well!
+
+## How We send response.data data to ResultPage. There is no relation between two components.
+
+To send `response.data` from the `Question` component to the `ResultPage` component without a direct relationship between the two components, you can use one of the following methods:
+
+---
+
+### **1. Using Context API**
+
+You can create a context to share the data across components. This is particularly useful if the `ResultPage` and `Question` components are part of the same component tree.
+
+**Steps:**
+
+1. Create a context (e.g., `ResultContext`):
+
+   ```javascript
+   import React, { createContext, useState, useContext } from "react";
+
+   const ResultContext = createContext();
+
+   export function ResultProvider({ children }) {
+     const [resultData, setResultData] = useState(null);
+
+     return (
+       <ResultContext.Provider value={{ resultData, setResultData }}>
+         {children}
+       </ResultContext.Provider>
+     );
+   }
+
+   export function useResult() {
+     return useContext(ResultContext);
+   }
+   ```
+
+2. Wrap your application (or a common parent component) with the `ResultProvider`:
+
+   ```javascript
+   import { ResultProvider } from "./context/ResultContext";
+   import Question from "./components/Question";
+   import ResultPage from "./components/ResultPage";
+
+   function App() {
+     return (
+       <ResultProvider>
+         {/* Routes or Components */}
+         <Question />
+         <ResultPage />
+       </ResultProvider>
+     );
+   }
+   export default App;
+   ```
+
+3. Use the `useResult` hook in `Question` to update the `resultData`:
+
+   ```javascript
+   import { useResult } from "./../../context/ResultContext";
+
+   function handleSubmit() {
+     async function submitAnswers() {
+       try {
+         const response = await api.post(
+           `${import.meta.env.VITE_SERVER_BASE_URL}/quizzes/${quizId}/attempt`,
+           { answers }
+         );
+
+         if (response.status === 200) {
+           console.log("Answer submitted successfully:", response.data);
+           setResultData(response.data); // Save response to context
+         }
+       } catch (error) {
+         console.error(
+           "Error submitting answers:",
+           error.response?.data || error
+         );
+       }
+     }
+     submitAnswers();
+   }
+   ```
+
+4. Use the `useResult` hook in `ResultPage` to access the `resultData`:
+
+   ```javascript
+   import { useResult } from "./../../context/ResultContext";
+
+   export default function ResultPage() {
+     const { resultData } = useResult();
+
+     return (
+       <div>
+         <h1>Result Page</h1>
+         {resultData ? (
+           <pre>{JSON.stringify(resultData, null, 2)}</pre>
+         ) : (
+           <p>No result data available.</p>
+         )}
+       </div>
+     );
+   }
+   ```
+
+---
+
+### **2. Using a State Management Library (Redux, Zustand, etc.)**
+
+If your app uses a state management library, you can store the `response.data` in a global state and access it from the `ResultPage`.
+
+**Example with Zustand:**
+
+```javascript
+import create from "zustand";
+
+const useResultStore = create((set) => ({
+  resultData: null,
+  setResultData: (data) => set({ resultData: data }),
+}));
+
+export default useResultStore;
+```
+
+- In `Question`:
+
+  ```javascript
+  import useResultStore from "./../../store/resultStore";
+
+  const { setResultData } = useResultStore();
+
+  function handleSubmit() {
+    async function submitAnswers() {
+      try {
+        const response = await api.post(
+          `${import.meta.env.VITE_SERVER_BASE_URL}/quizzes/${quizId}/attempt`,
+          { answers }
+        );
+
+        if (response.status === 200) {
+          console.log("Answer submitted successfully:", response.data);
+          setResultData(response.data); // Store in Zustand
+        }
+      } catch (error) {
+        console.error(
+          "Error submitting answers:",
+          error.response?.data || error
+        );
+      }
+    }
+    submitAnswers();
+  }
+  ```
+
+- In `ResultPage`:
+
+  ```javascript
+  import useResultStore from "./../../store/resultStore";
+
+  export default function ResultPage() {
+    const { resultData } = useResultStore();
+
+    return (
+      <div>
+        <h1>Result Page</h1>
+        {resultData ? (
+          <pre>{JSON.stringify(resultData, null, 2)}</pre>
+        ) : (
+          <p>No result data available.</p>
+        )}
+      </div>
+    );
+  }
+  ```
+
+---
+
+### **3. Using Navigation State (React Router)**
+
+If you're navigating from `Question` to `ResultPage`, pass the `response.data` as state through React Router's `useNavigate`.
+
+- **In `Question`**:
+
+  ```javascript
+  import { useNavigate } from "react-router-dom";
+
+  const navigate = useNavigate();
+
+  function handleSubmit() {
+    async function submitAnswers() {
+      try {
+        const response = await api.post(
+          `${import.meta.env.VITE_SERVER_BASE_URL}/quizzes/${quizId}/attempt`,
+          { answers }
+        );
+
+        if (response.status === 200) {
+          console.log("Answer submitted successfully:", response.data);
+          navigate("/result", { state: { result: response.data } });
+        }
+      } catch (error) {
+        console.error(
+          "Error submitting answers:",
+          error.response?.data || error
+        );
+      }
+    }
+    submitAnswers();
+  }
+  ```
+
+- **In `ResultPage`**:
+
+  ```javascript
+  import { useLocation } from "react-router-dom";
+
+  export default function ResultPage() {
+    const location = useLocation();
+    const resultData = location.state?.result;
+
+    return (
+      <div>
+        <h1>Result Page</h1>
+        {resultData ? (
+          <pre>{JSON.stringify(resultData, null, 2)}</pre>
+        ) : (
+          <p>No result data available.</p>
+        )}
+      </div>
+    );
+  }
+  ```
+
+---
+
+Choose the method that fits your application's structure and requirements. If you're using React Router, the navigation state might be the simplest solution. For more complex apps, Context API or a state management library like Zustand or Redux could be better.
+
+## How to two array compare each element equal or not and how many equal element, how many not equal element.
+
+### ওয়েব ডেভেলপমেন্টে `for` লুপ না মেথড, কোনটি বেশি প্রফেশনাল?
+
+ওয়েব ডেভেলপমেন্টে `for` লুপ এবং অ্যারে মেথড (যেমন: `forEach`, `map`, `filter`)—দুটিই বৈধ এবং নির্ভরযোগ্য। তবে অ্যারে মেথড ব্যবহার করা বর্তমান সময়ের **মডার্ন**, **সহজবোধ্য**, এবং **প্রফেশনাল** পদ্ধতি হিসেবে বিবেচিত হয়।
+
+---
+
+### তুলনা: `for` লুপ বনাম অ্যারে মেথড
+
+#### ১. **`for` লুপ**
+
+**গুণাবলি**:
+
+- **ইউজ করার সুবিধা**: যে কোনো ধরণের লজিক প্রয়োগ করা যায় এবং প্রক্রিয়া মাঝপথে থামানো যায় (`break` বা `return` ব্যবহার করে)।
+- **সামঞ্জস্যপূর্ণ**: সবধরণের জাভাস্ক্রিপ্ট পরিবেশে কাজ করে।
+
+**দুর্বলতা**:
+
+- কোড একটু বেশি বড় হয়।
+- জটিল কোডে ভুল হওয়ার ঝুঁকি বেশি থাকে।
+
+**উদাহরণ (for লুপ):**
+
+```javascript
+function compareArrays(arr1, arr2) {
+  let equalCount = 0;
+  let notEqualCount = 0;
+
+  for (let i = 0; i < arr1.length; i++) {
+    if (arr1[i] === arr2[i]) {
+      equalCount++;
+    } else {
+      notEqualCount++;
+    }
+  }
+
+  return { equalCount, notEqualCount };
+}
+```
+
+---
+
+#### ২. **অ্যারে মেথড**
+
+**গুণাবলি**:
+
+- **সহজ**: কোড পরিষ্কার ও বুঝতে সুবিধা।
+- **ডিক্লারেটিভ**: কাজ কী হবে তা বোঝা সহজ।
+- **মডার্ন স্টাইল**: বর্তমান প্রফেশনাল প্রোগ্রামিং পদ্ধতিতে বেশি ব্যবহৃত।
+
+**দুর্বলতা**:
+
+- জটিল লজিকের ক্ষেত্রে ডিবাগ করা কঠিন হতে পারে।
+- লুপ মাঝপথে থামানো যায় না।
+
+**উদাহরণ (forEach):**
+
+```javascript
+function compareArrays(arr1, arr2) {
+  let equalCount = 0;
+  let notEqualCount = 0;
+
+  arr1.forEach((value, index) => {
+    if (value === arr2[index]) {
+      equalCount++;
+    } else {
+      notEqualCount++;
+    }
+  });
+
+  return { equalCount, notEqualCount };
+}
+```
+
+**উদাহরণ (reduce):**
+
+```javascript
+function compareArrays(arr1, arr2) {
+  const result = arr1.reduce(
+    (acc, value, index) => {
+      if (value === arr2[index]) {
+        acc.equalCount++;
+      } else {
+        acc.notEqualCount++;
+      }
+      return acc;
+    },
+    { equalCount: 0, notEqualCount: 0 }
+  );
+
+  return result;
+}
+```
+
+---
+
+### কোনটি ব্যবহার করবেন?
+
+#### অ্যারে মেথড ব্যবহার করুন যখন:
+
+- কোড সহজ ও ছোট রাখার চেষ্টা করছেন।
+- আপনি টিমে কাজ করছেন যেখানে ফাংশনাল প্রোগ্রামিং স্টাইল বেশি জনপ্রিয়।
+- জটিল লজিক ছাড়া সাধারণ কাজ করতে চান।
+
+#### `for` লুপ ব্যবহার করুন যখন:
+
+- লুপের ওপর পূর্ণ নিয়ন্ত্রণ দরকার (যেমন: লুপ মাঝপথে থামানো)।
+- আপনি পারফরম্যান্স নিয়ে বেশি সচেতন (কিছু ক্ষেত্রে `for` লুপ একটু দ্রুততর)।
+- এমন পরিবেশে কাজ করছেন যেখানে অ্যারে মেথড সাপোর্ট করে না।
+
+---
+
+### প্রফেশনাল পরামর্শ:
+
+বর্তমান সময়ের ওয়েব ডেভেলপমেন্টে:
+
+1. **সহজ এবং পরিষ্কার কাজের জন্য অ্যারে মেথড** ব্যবহার করুন (যেমন: `forEach`, `reduce`)।
+2. **`for` লুপ ব্যবহার করুন** যদি জটিল লজিক বা বিশেষ কন্ট্রোল দরকার হয়।
+
+আপনার উল্লেখিত টাস্কের জন্য, `forEach` বা `reduce` ব্যবহার করা প্রফেশনাল দেখায়, যদি বিশেষ কোনো কারণ না থাকে `for` লুপ ব্যবহারের।

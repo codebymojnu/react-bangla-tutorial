@@ -2901,3 +2901,229 @@ function compareArrays(arr1, arr2) {
 2. **`for` লুপ ব্যবহার করুন** যদি জটিল লজিক বা বিশেষ কন্ট্রোল দরকার হয়।
 
 আপনার উল্লেখিত টাস্কের জন্য, `forEach` বা `reduce` ব্যবহার করা প্রফেশনাল দেখায়, যদি বিশেষ কোনো কারণ না থাকে `for` লুপ ব্যবহারের।
+
+## send correct_answers, submitted_answer to store 'ansStore.js'. but mind it this ansStore data change, when correct_answers, submitted_answer changed. create ansStore.js we use zustaind.
+
+Here's how you can create an `ansStore.js` using Zustand to store and update `correct_answers` and `submitted_answers` dynamically.
+
+### ansStore.js
+
+```javascript
+import { create } from "zustand";
+
+const useAnsStore = create((set) => ({
+  correctAnswers: [],
+  submittedAnswers: [],
+
+  // Action to set correct and submitted answers
+  setAnswers: (correct_answers, submitted_answers) =>
+    set(() => ({
+      correctAnswers: correct_answers,
+      submittedAnswers: submitted_answers,
+    })),
+}));
+
+export default useAnsStore;
+```
+
+### Explanation:
+
+- **`useAnsStore`**: A Zustand store to manage `correctAnswers` and `submittedAnswers`.
+- **`setAnswers`**: An action to update the `correctAnswers` and `submittedAnswers` when `correct_answers` or `submitted_answers` changes.
+
+### Integrating With `quizSummary`
+
+You can integrate the store with your `quizSummary` function to dynamically update the answers in the Zustand store. Here's the modified `quizSummary` function:
+
+### Updated `quizSummary`
+
+```javascript
+import useAnsStore from "./ansStore";
+
+export default function quizSummary(resultData, userId) {
+  let correct_answer = 0;
+  let wrong_answer = 0;
+  let total_marks = 0;
+  let user_marks = 0;
+
+  const userAttempt = resultData?.attempts?.find(
+    (attempt) => attempt?.user?.id === userId
+  );
+  const { correct_answers = [], submitted_answers = [] } = userAttempt;
+
+  // Update the Zustand store with the latest answers
+  const setAnswers = useAnsStore((state) => state.setAnswers);
+  setAnswers(correct_answers, submitted_answers);
+
+  console.log(correct_answers, submitted_answers);
+
+  // Iterate through correct answers
+  for (let i = 0; i < correct_answers.length; i++) {
+    let isCorrect = false;
+
+    // Loop through submitted answers
+    for (let j = 0; j < submitted_answers.length; j++) {
+      if (correct_answers[i].question_id === submitted_answers[j].question_id) {
+        if (correct_answers[i].answer === submitted_answers[j].answer) {
+          correct_answer++;
+          user_marks += correct_answers[i].marks;
+          isCorrect = true;
+        }
+        break;
+      }
+    }
+
+    if (!isCorrect) {
+      wrong_answer++;
+    }
+
+    total_marks += correct_answers[i].marks;
+  }
+
+  return {
+    quizTitle: resultData.quiz?.title || "Unknown Quiz",
+    quizDescription: resultData.quiz?.description || "No Description",
+    totalQuestions: resultData.quiz?.total_questions || "0",
+    correctAnswer: correct_answer,
+    wrongAnswer: wrong_answer,
+    userMarks: user_marks,
+    totalMarks: total_marks,
+    percentage:
+      total_marks > 0 ? ((user_marks / total_marks) * 100).toFixed(1) : 0,
+  };
+}
+```
+
+### Key Notes:
+
+1. **Dynamic Updates**: Whenever `correct_answers` or `submitted_answers` changes, the store is updated with `setAnswers`.
+2. **Easy Access**: Other components or functions can access these values from the Zustand store as needed:
+   ```javascript
+   const { correctAnswers, submittedAnswers } = useAnsStore();
+   ```
+
+Let me know if you need further adjustments or explanations!
+
+## আগের উত্তর দেয়া থাকলে, আর সিলেক্ট করার সুযোগ দাও না।
+
+আপনার কোডের উপর ভিত্তি করে ফিচারটি কিভাবে কাজ করবে, তা ধাপে ধাপে ব্যাখ্যা করা হলো:
+
+---
+
+### ১. **`answeredQuestions` স্টেট যোগ করা**
+
+কোডে `answeredQuestions` নামে একটি স্টেট যোগ করা হয়েছে, যা প্রতিটি প্রশ্নের উত্তর ট্র্যাক করে।
+
+```javascript
+const [answeredQuestions, setAnsweredQuestions] = useState({});
+```
+
+- এটি একটি অবজেক্ট যেখানে প্রতিটি প্রশ্নের `id` অনুযায়ী উত্তর সংরক্ষিত থাকবে।
+- উদাহরণ: `{ "q1": "Option A", "q2": "Option B" }`
+
+---
+
+### ২. **`useEffect` দিয়ে উত্তর লোড করা**
+
+যখন ব্যবহারকারী `Previous` বা `Next` দিয়ে প্রশ্ন পরিবর্তন করবেন, তখন সেই প্রশ্নের আগে দেওয়া উত্তর দেখানোর জন্য `useEffect` ব্যবহার করা হয়েছে।
+
+```javascript
+useEffect(() => {
+  const currentQuestionId = questions[currentIndex]?.id;
+  setSelectedOption(answeredQuestions[currentQuestionId] || null);
+}, [currentIndex, answeredQuestions, questions]);
+```
+
+- **কাজ:**
+  - বর্তমান প্রশ্নের `id` দেখে উত্তর আছে কিনা চেক করে।
+  - থাকলে সেটি `selectedOption`-এ সেট করে।
+  - না থাকলে `null` রেখে দেয়।
+
+---
+
+### ৩. **উত্তর নির্বাচন করা (handleOptionSelect)**
+
+যদি ব্যবহারকারী একটি অপশন নির্বাচন করেন এবং সেই প্রশ্নের উত্তর আগে না দেওয়া হয়ে থাকে, তাহলে সেটি `answeredQuestions`-এ সংরক্ষণ করা হয়।
+
+```javascript
+function handleOptionSelect(option) {
+  const currentQuestionId = questions[currentIndex]?.id;
+
+  if (!answeredQuestions[currentQuestionId]) {
+    setSelectedOption(option);
+    setAnsweredQuestions((prev) => ({
+      ...prev,
+      [currentQuestionId]: option,
+    }));
+    onAnswer(currentQuestionId, option); // প্যারেন্ট কম্পোনেন্টে পাঠায়
+  }
+}
+```
+
+- **কাজ:**
+  - প্রশ্নের উত্তর দেওয়া হয়েছে কিনা চেক করে।
+  - না দিলে উত্তর সংরক্ষণ করে এবং প্যারেন্টে (`onAnswer`) জানায়।
+
+---
+
+### ৪. **উত্তর নির্বাচন বন্ধ রাখা (`isDisabled`)**
+
+যদি প্রশ্নের উত্তর দেওয়া হয়ে থাকে, তাহলে অপশনগুলো নিষ্ক্রিয় (`disabled`) করা হয়।
+
+```javascript
+<Option
+  key={index}
+  name={option}
+  option={option}
+  isDisabled={!!answeredQuestions[questions[currentIndex]?.id]} // প্রশ্নের উত্তর দেওয়া আছে কিনা চেক
+  isSelected={selectedOption === option} // নির্বাচন করা অপশন চিহ্নিত
+  onSelect={() => handleOptionSelect(option)}
+/>
+```
+
+- **কাজ:**
+  - প্রশ্নের উত্তর আগে দেওয়া থাকলে, ব্যবহারকারী নতুন করে উত্তর দিতে পারবেন না।
+  - পূর্ববর্তী উত্তর হাইলাইট করা থাকে।
+
+---
+
+### ৫. **`Next` বোতামে `setSelectedOption` রিসেট করা**
+
+পরবর্তী প্রশ্নে যাওয়ার সময় `setSelectedOption(null)` ব্যবহার করা হয়, যেন নতুন প্রশ্নে পূর্ববর্তী নির্বাচন না থাকে।
+
+```javascript
+<NextButton
+  onNext={() => {
+    setSelectedOption(null); // নতুন প্রশ্নের জন্য নির্বাচন রিসেট
+    onNext();
+  }}
+  currentIndex={currentIndex}
+  totalQ={questions?.length}
+/>
+```
+
+---
+
+### ৬. **`Previous` বোতামে উত্তর দেখানো**
+
+পূর্ববর্তী প্রশ্নে যাওয়ার সময় ব্যবহারকারী তার দেওয়া উত্তর দেখতে পারবেন। `useEffect` এই কাজটি করে।
+
+```javascript
+<button
+  onClick={onPrevious}
+  className="w-1/3 text-center ml-auto block bg-primary text-white py-2 px-4 rounded-md hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary mb-6 font-semibold my-8"
+>
+  Previous
+</button>
+```
+
+---
+
+### সংক্ষিপ্ত সারসংক্ষেপ:
+
+- **স্টেট ম্যানেজমেন্ট:** `answeredQuestions` স্টেট উত্তর সংরক্ষণ করে।
+- **উত্তর লক:** উত্তর দেওয়া থাকলে অপশন নিষ্ক্রিয় থাকে।
+- **নেভিগেশন:** আগের প্রশ্নে গেলে উত্তর দেখানো হয় এবং নতুন প্রশ্নে রিসেট হয়।
+- **ইউজার ফ্লো:** উত্তর দেওয়া হলে তা চিহ্নিত করা হয় এবং পরিবর্তন করা যায় না।
+
+এই ফিচারটি সহজেই কুইজ অ্যাপে প্রয়োগ করা যায় এবং ব্যবহারকারীর অভিজ্ঞতা উন্নত করে।

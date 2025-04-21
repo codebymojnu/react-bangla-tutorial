@@ -1,0 +1,75 @@
+### ✅ তুমি যা করতে চাচ্ছো:
+
+তুমি চাইছো ইউজার যদি `input` এ `food` এর নাম পরিবর্তন করে, তাহলে সেই নামটা আপডেট হোক — মানে `foods` state-এ reflect করুক।
+
+### ❌ কিন্তু সমস্যা কোথায়?
+
+তুমি `handleItemChange()` ফাংশনে শুধু `console.log()` করছো, কিন্তু `foods` state আপডেট করোনি। তাই ইনপুট ফিল্ডে টাইপ করলেও সেটা ইনপুটে reflect করছে না — **কারণ React এর `value` prop controlled, কিন্তু state আপডেট হচ্ছেনা।**
+
+---
+
+### ✅ সঠিক সমাধান:
+
+তোমাকে `handleItemChange()` এর ভিতরে `setFoods()` ব্যবহার করে সেই নির্দিষ্ট `food` item এর `name` আপডেট করতে হবে।
+
+---
+
+### 🔧 ঠিক করা কোড:
+
+```jsx
+import { useState } from "react";
+
+const initialFoods = [
+  { name: "egg", id: 1 },
+  { name: "beef", id: 2 },
+  { name: "mutton", id: 3 },
+];
+
+export default function FoodList() {
+  const [foods, setFoods] = useState(initialFoods);
+  const [selectedItem, setSelectedItem] = useState(foods[0]);
+
+  function handleItemChange(e, id) {
+    const updatedFoods = foods.map((food) =>
+      food.id === id ? { ...food, name: e.target.value } : food
+    );
+    setFoods(updatedFoods);
+  }
+
+  return (
+    <div>
+      <ul>
+        {foods?.map((food) => (
+          <div key={food?.id}>
+            <input
+              className="mt-2 border border-gray-300 rounded-lg focus:outline-none"
+              value={food?.name}
+              onChange={(e) => {
+                handleItemChange(e, food?.id);
+              }}
+            />
+            <button
+              onClick={() => {
+                setSelectedItem(food);
+              }}
+            >
+              Choose
+            </button>
+          </div>
+        ))}
+      </ul>
+      You Choose: {selectedItem?.name}
+    </div>
+  );
+}
+```
+
+---
+
+### 🧠 Summary (সহজ ভাষায়):
+
+- React এ controlled input মানে: `value` এর সাথে state bind করা।
+- তুমি যদি `value={food.name}` দাও, তাহলে `onChange` এর সময় সেই state আপডেট না করলে ইনপুট কাজ করবে না।
+- তাই `setFoods()` দিয়ে সেই item আপডেট করতে হবে `map()` দিয়ে।
+
+---

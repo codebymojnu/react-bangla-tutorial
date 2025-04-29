@@ -1,0 +1,76 @@
+Alright — you want to **add an image** inside your `.mdx` file (the one you posted).
+
+In **`.mdx`**, you can add an image in **two simple ways**:
+
+---
+
+### 1. **Using Standard Markdown Syntax**
+
+If the image is in your **public** folder or a URL:
+
+```mdx
+![Alt Text](image-path)
+
+Example:
+![Full Page Screenshot Example](/images/full-page-screenshot.png)
+```
+
+✅ Here, `/images/full-page-screenshot.png` means:
+
+- If your project has `public/images/full-page-screenshot.png`, it will work.
+- Or if it's a URL: `https://example.com/image.png`, you can use that directly.
+
+---
+
+### 2. **Using `<img>` Tag Inside `.mdx`**
+
+Because `.mdx` supports **JSX**, you can also do:
+
+```mdx
+<img
+  src="/images/full-page-screenshot.png"
+  alt="Full Page Screenshot"
+  width="600"
+/>
+```
+
+✅ Advantages:
+
+- You can control `width`, `height`, `style`, etc.
+
+---
+
+### Example inside your posted `.mdx` content:
+
+Let's say you want to add a screenshot after **"1. If You Want to Screenshot the Whole Page:"**, then:
+
+```mdx
+### 1. **If You Want to Screenshot the Whole Page:**
+
+<img
+  src="/images/full-page-screenshot.png"
+  alt="Full Page Screenshot"
+  width="700"
+/>
+
+**(a) Browser (like Chrome, Edge, Firefox):**
+
+...
+```
+
+---
+
+### ⚡ Quick Rules to Remember:
+
+| Situation                 | How to Add Image            |
+| :------------------------ | :-------------------------- |
+| Local file (in `public/`) | `/images/yourfile.png`      |
+| Online URL                | Full link `https://...`     |
+| Need width/height control | Use `<img>` JSX             |
+| Just simple image         | Use `![Alt](path)` Markdown |
+
+---
+
+**Would you like me to show you a real example structure** like folder setup and `.mdx` file?  
+It would take just 1-2 minutes and make it super clear! 🎯📄  
+(If yes, tell me!)

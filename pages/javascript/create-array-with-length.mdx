@@ -1,0 +1,14 @@
+Got it! If you want to create an array where the length matches the number you provide, here's how you can do it in JavaScript:
+
+```javascript
+function createArrayWithLength(length) {
+  return new Array(length).fill(0); // Creates an array of the given length, filled with 0
+}
+
+// Example usage:
+let length = 3;
+let array = createArrayWithLength(length);
+console.log(array); // Output: [0, 0, 0]
+```
+
+In this example, if you give the number `3`, the array will be created with a length of 3, and it will be filled with `0`s. You can change `0` to any other default value you'd like to fill the array with.

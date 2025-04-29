@@ -1,0 +1,104 @@
+তোমার সমস্যাটা হলো:  
+যখন ইউজার **কার্ট থেকে কোনো movie remove করে**, তখন `MovieCard` কম্পোনেন্টে `inCart` স্টেট আগের মতই `true` থাকে, যার ফলে “Already Added” লেখা দেখা যায়।  
+কিন্তু বাস্তবে সে আইটেমটা তো কার্ট থেকে মুছে গেছে — তাই এখন `"Add to Cart"` দেখানো উচিত।
+
+---
+
+## ✅ সমাধান:
+
+তুমি **`inCart` স্টেট লোকালি MovieCard-এ রাখছো**, যেটা শুধু একবার সেট হয়, কিন্তু **কার্টের আপডেট অনুযায়ী আবার চেক করে না**।  
+তাই এর সমাধান — আমরা `inCart` স্টেট **দিয়েই না চালিয়ে**, প্রতিবার রেন্ডারে সরাসরি `cartItems` থেকে চেক করে নিই।
+
+---
+
+## ✨ Step-by-Step Update:
+
+### 🔁 MovieCard.jsx – `inCart` স্টেট বাদ দিয়ে সরাসরি চেক করো:
+
+```js
+import { useState } from "react";
+import star from "../assets/star.svg";
+import tag from "../assets/tag.svg";
+import { useCart } from "../context/MovieContext";
+import createArrayWithLength from "../utils/createArrayWithLength";
+import MovieDetails from "./MovieDetails";
+
+export default function MovieCard({ movie }) {
+  const [showDetails, setShowDetails] = useState(false);
+  const [movieSelect, setMovieSelect] = useState(null);
+  const { cartItems, dispatch } = useCart();
+
+  // 🔁 সরাসরি চেক করো ইন কার্ট আছে কি না
+  const inCart = cartItems.some((item) => item.id === movie.id);
+
+  function handleDetails(movie) {
+    setShowDetails(true);
+    setMovieSelect(movie);
+  }
+
+  function handleClose() {
+    setShowDetails(false);
+    setMovieSelect(null);
+  }
+
+  function handleAddCart(movie) {
+    if (!inCart) {
+      dispatch({
+        type: "ADD_TO_CART",
+        movie,
+      });
+    }
+  }
+
+  return (
+    <>
+      {showDetails && (
+        <MovieDetails
+          movie={movieSelect}
+          onClose={handleClose}
+          onAddCart={handleAddCart}
+        />
+      )}
+      <figure className="p-4 border border-black/10 shadow-sm dark:border-white/10 rounded-xl">
+        <a onClick={() => handleDetails(movie)} href="#">
+          <img className="w-full object-cover" src={movie.cover} alt="" />
+          <figcaption className="pt-4">
+            <h3 className="text-xl mb-1">{movie.title}</h3>
+            <p className="text-[#575A6E] text-sm mb-2">{movie.genre}</p>
+            <div className="flex items-center space-x-1 mb-5">
+              {createArrayWithLength(movie.rating).map((_, index) => (
+                <img key={index} src={star} width="14" height="14" alt="star" />
+              ))}
+            </div>
+            <button
+              className="bg-primary rounded-lg py-2 px-5 flex items-center justify-center gap-2 text-[#171923] font-semibold text-sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleAddCart(movie);
+              }}
+            >
+              <img src={tag} alt="" />
+              <span>
+                {!inCart ? `${movie.price} | Add to Cart` : "Already Added"}
+              </span>
+            </button>
+          </figcaption>
+        </a>
+      </figure>
+    </>
+  );
+}
+```
+
+---
+
+## ✅ সুবিধা:
+
+- এখন `MovieCard` রিয়েল টাইমে চেক করে `cartItems` এ সেই movie আছে কি না।
+- কোনো কিছু remove করলেও UI সাথে সাথে আপডেট হবে।
+- `useState(false)` দিয়ে `inCart` রাখার দরকার নেই।
+
+---
+
+চাইলে আমি MovieContext-এর reducer-টা দেখেও validate করে দিতে পারি তোমার লজিক ঠিকমতো কাজ করছে কি না।  
+তুমি কি সেটাও শেয়ার করতে চাও?

@@ -1,0 +1,45 @@
+Md. Mojnu bhai, nice reducer code! But there's a small **spelling mistake** that's causing the error.
+
+---
+
+### ❌ Error:
+
+```js
+export default fuction tasksReducer(tasks, action) {
+               🔺🔺 typo!
+```
+
+### ✅ Fix:
+
+```js
+export default function tasksReducer(tasks, action) {
+                      ✅ correct spelling of "function"
+```
+
+---
+
+### 🛠 Final Fixed Version:
+
+```js
+export default function tasksReducer(tasks, action) {
+  if (action.type === "add") {
+    return [...tasks, action.task];
+  } else if (action.type === "change") {
+    return tasks?.map((task) => {
+      if (task.id === action.task.id) {
+        return action.task;
+      } else {
+        return task;
+      }
+    });
+  } else if (action.type === "delete") {
+    return tasks.filter((task) => task.id !== action.id);
+  } else {
+    return tasks;
+  }
+}
+```
+
+---
+
+Let me know if you also want to connect this reducer with `useReducer` or want a simple example to practice.

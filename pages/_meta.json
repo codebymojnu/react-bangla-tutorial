@@ -1,18 +1,23 @@
 {
-  "index": "Introduction",
-  "describing-the-ui": "Describing the UI",
-  "adding-interactivity": "Adding Interactivity",
-  "ManagingState": "Managing State",
-  "ProjectRongtuli": "Project Rongtuli- A Social Media App",
-  "daily-code-error-practice": "Daily Code Error",
-  "react-document-word-meaning": "React Document Word Meaning",
-  "correct-grammer-daily": "English Practice- Correct Grammar Daily",
+  "index": "শুরুর প্রথমে কথা",
+  "describing-the-ui": "UI তৈরি কর",
+  "adding-interactivity": "UI এ ইন্টারেক্টিভিটি যোগ কর",
+  "managing-state": "UI পরিবর্তনের জন্য স্টেট ম্যানেজ কর",
+  "word-meaning-from-react-document": "React Document এর অজানা শব্দের অর্থ",
+  "fundamentals-of-javascript": "জাভাস্ক্রিপ্টের অ আ ক খ",
+  "tailwind-css": "Tailwind CSS টিউটোরিয়াল",
+  "git-and-github": "গিট এবং গিটহাব শিখতেই হবে",
+  "bug-fixed-in-daily": "প্রতিদিন যে বাগগুলো হয়",
+  "technical-asking-question-chatgpt": "টেকনিক্যাল কিছু প্রশ্ন প্রশ্ন",
+  "correct-sentences-grammer": "ইংরেজি বাক্য গঠনে গ্রামার শুদ্ধতা",
+  "lws-project": "LWS Project",
+  "lws-assignment": "LWS Assignment",
   "about": {
-    "title": "About",
+    "title": "প্লাটফর্ম সম্পর্কে",
     "type": "page"
   },
   "contact": {
-    "title": "Contact ↗",
+    "title": "যোগাযোগ ↗",
     "type": "page",
     "href": "https://github.com/codebymojnu/",
     "newWindow": true

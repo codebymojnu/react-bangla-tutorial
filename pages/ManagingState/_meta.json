@@ -1,5 +1,0 @@
-{
-  "ReactingToInputWithState": "ইউজারের ইনপুট অনুযায়ী UI পরিবর্তনের জন্য React-এ State ব্যবহার",
-  "choosing-the-state-structure": "State এর স্ট্রাকচার ঠিকভাবে নির্বাচন করা",
-  "lifting-state-up": "State কে Parent কম্পোনেন্টে নিয়ে যাওয়া"
-}

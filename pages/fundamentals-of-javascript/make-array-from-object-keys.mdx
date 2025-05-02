@@ -1,0 +1,24 @@
+To make an **array from an object's keys** in JavaScript, you can use the built-in `Object.keys()` method.
+
+### 🔹 Syntax:
+
+```js
+const keysArray = Object.keys(yourObject);
+```
+
+### 🔹 Example:
+
+```js
+const task = {
+  title: "Write Blog",
+  status: "To Do",
+  priority: "High",
+};
+
+const keys = Object.keys(task);
+console.log(keys); // Output: ["title", "status", "priority"]
+```
+
+This gives you an array of all the keys (property names) from the object.
+
+Would you also like to get the values or both keys and values together?

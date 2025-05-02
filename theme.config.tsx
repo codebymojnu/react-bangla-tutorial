@@ -8,10 +8,10 @@ const config: DocsThemeConfig = {
     link: "https://github.com/codebymojnu/react-bangla-tutorial",
   },
   chat: {
-    link: "https://discord.com/mojnu13",
+    link: "https://www.linkedin.com/in/mojnu0/",
   },
   docsRepositoryBase:
-    "https://github.com/codebymojnu/react-bangla-tutorial/blob/main",
+    "https://github.com/codedbyMojnu/react-bangla-tutorial/blob/main",
   footer: {
     text: "React Bangla Tutorial",
   },
@@ -47,14 +47,14 @@ const config: DocsThemeConfig = {
           property="description"
           content={
             meta.description ||
-            "React Bangla Tutorial স্টেপ বাই স্টেপ ফলো করে রিয়েক্ট শিখুন."
+            "React Bangla Tutorial - স্টেপ বাই স্টেপ ফলো করে রিয়েক্ট শিখুন."
           }
         />
         <meta
           property="og:description"
           content={
             meta.description ||
-            "React Bangla Tutorial স্টেপ বাই স্টেপ ফলো করে রিয়েক্ট শিখুন."
+            "React Bangla Tutorial - স্টেপ বাই স্টেপ ফলো করে রিয়েক্ট শিখুন."
           }
         />
       </>

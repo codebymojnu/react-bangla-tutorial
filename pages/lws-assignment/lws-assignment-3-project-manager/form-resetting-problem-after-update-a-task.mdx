@@ -1,0 +1,13 @@
+```jsx
+{
+  showForm && (
+    <AddForm
+      key={editedTask ? editedTask.id : "new"}
+      onClose={handleCloseForm}
+      editedCategory={editedCategory}
+      editedTask={editedTask}
+      onUpdatedFinished={updatedFinished}
+    />
+  );
+}
+```

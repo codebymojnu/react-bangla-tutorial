@@ -1,0 +1,81 @@
+চলো, আমরা একটা উদাহরণ দেখি যেখানে ১০০০টা এলিমেন্ট DOM এ আপডেট করতে হবে।
+**Vanilla JavaScript (Real DOM)** vs **React (Virtual DOM)** — এই দুটোর performance পার্থক্য এখানে বোঝা যাবে।
+
+---
+
+## ✅ উদাহরণ: ১০০০ বার `div` তে সংখ্যা ইনক্রিমেন্ট
+
+### **1. Vanilla JavaScript (Real DOM):**
+
+```html
+<!-- index.html -->
+<body>
+  <div id="container"></div>
+  <button onclick="update()">Update</button>
+
+  <script>
+    const container = document.getElementById("container");
+
+    // Initial 1000 divs
+    for (let i = 0; i < 1000; i++) {
+      const div = document.createElement("div");
+      div.innerText = i;
+      div.id = "item-" + i;
+      container.appendChild(div);
+    }
+
+    function update() {
+      for (let i = 0; i < 1000; i++) {
+        document.getElementById("item-" + i).innerText = i + 1;
+      }
+    }
+  </script>
+</body>
+```
+
+- এখানে `update()` function এ প্রতিটি div এর ভিতরের টেক্সট আপডেট করা হচ্ছে।
+- প্রতিটি `innerText` পরিবর্তন মানেই repaint।
+- ১০০০ বার DOM access, ১০০০ বার update = slow.
+
+---
+
+### **2. React (Virtual DOM):**
+
+```jsx
+// App.jsx
+import { useState } from "react";
+
+export default function App() {
+  const [numbers, setNumbers] = useState([...Array(1000).keys()]);
+
+  const handleUpdate = () => {
+    setNumbers(numbers.map((num) => num + 1));
+  };
+
+  return (
+    <div>
+      <button onClick={handleUpdate}>Update</button>
+      {numbers.map((num, index) => (
+        <div key={index}>{num}</div>
+      ))}
+    </div>
+  );
+}
+```
+
+- React এখানেও ১০০০টা div দেখাচ্ছে, কিন্তু Virtual DOM প্রথমে detect করে **কি কি পরিবর্তন হয়েছে**।
+- তারপর শুধু পরিবর্তিত অংশটুকুই real DOM-এ রেন্ডার করে।
+- অনেক বেশি efficient এবং দ্রুত।
+
+---
+
+### **Key পার্থক্য বোঝার জন্য:**
+
+- Real DOM: সরাসরি DOM ১০০০ বার পরিবর্তন করে = বেশি time & memory।
+- Virtual DOM: diff করে দেখে কোনটা পরিবর্তন হয়েছে = কম কাজ করে, দ্রুত কাজ শেষ করে।
+
+---
+
+তুমি চাইলে এই দুইটা কোড তুমি Chrome DevTools-এর **Performance** ট্যাবে রেকর্ড করে দেখতে পারো — React version অনেক কম repaint করে।
+
+তুমি কি চাও আমি এই কোড দুটার একটা GIF বা স্ক্রিনশট বানিয়ে দিই যাতে পার্থক্য চোখে দেখো?

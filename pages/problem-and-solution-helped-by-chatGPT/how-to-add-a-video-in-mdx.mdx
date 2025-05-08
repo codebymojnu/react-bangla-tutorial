@@ -1,0 +1,66 @@
+Got it — you want to **add a `.webm` video** inside a **`.mdx` file** (Markdown + JSX).  
+I'll explain it very simply:
+
+---
+
+### ✅ Basic way to add a `.webm` video in `.mdx`
+
+Since `.mdx` allows **HTML** inside, you can just write a normal `<video>` tag!
+
+Here’s a simple example:
+
+```mdx
+<video width="600" controls>
+  <source src="/videos/your-video-file.webm" type="video/webm" />
+  Your browser does not support the video tag.
+</video>
+```
+
+**Explanation:**
+
+- `width="600"` → video width (you can change it)
+- `controls` → adds Play/Pause buttons
+- `<source>` → points to your `.webm` file
+- If video is not supported, fallback text will show.
+
+---
+
+### ✅ Important Things
+
+- Your `.webm` file must be placed **publicly accessible**.  
+  Example if you're using Next.js: put it inside `/public/videos/your-video-file.webm`.
+- Then access it like `/videos/your-video-file.webm`.
+
+---
+
+### ✅ Example Full `.mdx` content
+
+```mdx
+# My Cool Video
+
+Here is a demo video:
+
+<video width="600" controls>
+  <source src="/videos/demo.webm" type="video/webm" />
+  Your browser does not support the video tag.
+</video>
+
+Enjoy the video!
+```
+
+---
+
+### ⚡ Bonus Tip (Optional)
+
+If you want **autoplay**, **mute**, and **loop**, you can add more attributes:
+
+```mdx
+<video width="600" controls autoplay muted loop>
+  <source src="/videos/demo.webm" type="video/webm" />
+</video>
+```
+
+---
+
+Would you like me to also show how to make it **responsive** for mobile devices (with Tailwind CSS or simple inline CSS)? 📱  
+(If yes, I'll give you that ready code too!)

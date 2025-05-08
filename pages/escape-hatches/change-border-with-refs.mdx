@@ -1,0 +1,163 @@
+Yes, it's perfectly fine to **change the border of an image using a ref** in React — especially if you want to do it dynamically, such as when a button is clicked.
+
+Here’s a simple example using `useRef` to **add a border to an image on button click**:
+
+---
+
+### ✅ **React Example: Add Border to Image with `ref`**
+
+```jsx
+import { useRef } from "react";
+
+function App() {
+  const imageRef = useRef(null);
+
+  const handleAddBorder = () => {
+    imageRef.current.style.border = "5px solid #2196F3"; // blue border
+    imageRef.current.style.borderRadius = "12px";
+  };
+
+  return (
+    <div>
+      <img
+        ref={imageRef}
+        src="your-image-url.jpg"
+        alt="With Border"
+        width="200"
+      />
+      <br />
+      <button onClick={handleAddBorder}>Add Border</button>
+    </div>
+  );
+}
+```
+
+---
+
+### ✅ Better Alternative: Toggle a CSS Class
+
+```jsx
+import { useRef } from "react";
+import "./styles.css";
+
+function App() {
+  const imageRef = useRef(null);
+
+  const handleToggleBorder = () => {
+    imageRef.current.classList.toggle("custom-border");
+  };
+
+  return (
+    <div>
+      <img
+        ref={imageRef}
+        src="your-image-url.jpg"
+        alt="With Border"
+        width="200"
+      />
+      <br />
+      <button onClick={handleToggleBorder}>Toggle Border</button>
+    </div>
+  );
+}
+```
+
+**styles.css**
+
+```css
+.custom-border {
+  border: 4px dotted green;
+  border-radius: 10px;
+  padding: 6px;
+}
+```
+
+---
+
+✅ **Yes, it's okay to use refs for styling**, especially for dynamic, one-off effects. But for more maintainable and scalable styling, consider toggling classes with `ref.current.classList`.
+
+Would you like to remove the border after a few seconds automatically?
+
+---
+
+---
+
+# Main Example
+
+To **remove a CSS class** from elements stored in your `Map` (via `ref`), you can use `classList.remove()`.
+
+In your case, if you want to **remove a specific class (e.g., `selected-border`)** from all images before adding it to the clicked one, follow this improved approach:
+
+---
+
+### ✅ Step 1: Define a custom border class in CSS (e.g., Tailwind or your own)
+
+```css
+/* styles.css or inside Tailwind config */
+.selected-border {
+  border: 2px solid red;
+  border-radius: 8px;
+}
+```
+
+Or for Tailwind users:
+
+```html
+className="border-2 border-red-500 rounded-lg"
+```
+
+---
+
+### ✅ Step 2: Modify `scrollToView()` to remove and add the class
+
+```js
+function scrollToView(index) {
+  const map = getMap();
+
+  // 🔴 Remove class from all nodes
+  for (let node of map.values()) {
+    node?.classList.remove("selected-border");
+  }
+
+  // ✅ Add class to the selected node
+  const node = map.get(index);
+  if (node) {
+    node.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+      inline: "center",
+    });
+    node.classList.add("selected-border");
+  }
+}
+```
+
+---
+
+### ✅ Step 3: Add the class name in the image wrapper (li)
+
+Update your `li` element:
+
+```jsx
+<li
+  key={member.name}
+  ref={(node) => {
+    const map = getMap();
+    if (node) {
+      map.set(member.name, node);
+    } else {
+      map.delete(member.name);
+    }
+  }}
+  className="flex-shrink-0 text-center transition-all duration-300"
+>
+```
+
+Now, when you click a button, it:
+
+- Removes the `selected-border` class from all images
+- Adds it only to the clicked one
+
+---
+
+Would you prefer using Tailwind utility classes instead of writing custom CSS?

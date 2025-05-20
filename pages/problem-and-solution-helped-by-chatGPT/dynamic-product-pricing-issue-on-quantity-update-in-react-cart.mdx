@@ -1,0 +1,127 @@
+You're absolutely right — **`+100000`** is not valid for every product because product prices vary. Instead, you should separate:
+
+- `unitPrice`: the fixed price of a single item (unchanged)
+- `price`: the total price = `unitPrice × quantity`
+
+---
+
+### ✅ Recommended Approach
+
+Update your cart state structure so that each item includes a constant `unitPrice`, and you always compute `price = unitPrice × quantity`.
+
+---
+
+### 🔄 Update Your Reducer Logic
+
+Here's how to correctly handle the `INCREASE_QUANTITY` logic:
+
+```js
+else if (action.type === "INCREASE_QUANTITY") {
+  const updatedItems = items.map((item) => {
+    if (item.id === action.item.id) {
+      const quantity = item.quantity + 1;
+      const price = item.unitPrice * quantity;
+      return { ...item, quantity, price };
+    } else {
+      return item;
+    }
+  });
+  return updatedItems;
+}
+```
+
+---
+
+### 🛒 When Adding to Cart (addedToCart case)
+
+Make sure you store `unitPrice`, `quantity`, and `price` correctly when an item is first added:
+
+```js
+else if (action.type === "addedToCart") {
+  const isExist = items.find((i) => i.id === action.item.id);
+  if (isExist) return items;
+
+  const item = {
+    ...action.item,
+    unitPrice: action.item.price,
+    quantity: 1,
+    price: action.item.price,
+  };
+  return [...items, item];
+}
+```
+
+---
+
+### 🧠 Why This Works:
+
+- `unitPrice`: original price (never changes)
+- `quantity`: increases or decreases
+- `price`: always updated as `unitPrice × quantity`
+
+---
+
+Let me know if you also want the `DECREASE_QUANTITY` and `DELETE_ITEM` logic.
+
+Yes, absolutely — you **can copy `price` to a new field `unitPrice`** when the product is first added to the cart, and then use that `unitPrice` for future quantity updates. This is a common and recommended approach.
+
+### ✅ Here's how you can do it:
+
+#### In the `"addedToCart"` case:
+
+When adding a new product to the cart, copy its original `price` into a new `unitPrice` field:
+
+```js
+{
+  ...action.item,
+  quantity: 1,
+  unitPrice: action.item.price, // copy original price
+  price: action.item.price      // total price for 1 item
+}
+```
+
+#### Then use `unitPrice` in `"INCREASE_QUANTITY"`:
+
+```js
+const quantity = item.quantity + 1;
+const price = quantity * item.unitPrice;
+```
+
+---
+
+### ✅ Final example (only relevant parts shown):
+
+```js
+else if (action.type === "addedToCart") {
+  return [
+    ...items,
+    {
+      ...action.item,
+      quantity: 1,
+      unitPrice: action.item.price, // save unit price
+      price: action.item.price,     // initial total price
+    },
+  ];
+}
+
+else if (action.type === "INCREASE_QUANTITY") {
+  return items.map((item) => {
+    if (item.id === action.item.id) {
+      const quantity = item.quantity + 1;
+      const price = quantity * item.unitPrice; // use unitPrice
+      return { ...item, quantity, price };
+    }
+    return item;
+  });
+}
+```
+
+---
+
+### ✅ Benefits:
+
+- Keeps your logic clean.
+- Avoids incorrect price doubling.
+- Makes it easy to calculate discounts or tax later.
+
+Let me know if you'd like a version that also supports `"DECREASE_QUANTITY"` or total cart value calculation.

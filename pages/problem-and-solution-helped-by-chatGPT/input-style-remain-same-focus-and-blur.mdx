@@ -1,0 +1,97 @@
+You're welcome! Here's how you can make the `CheckoutPage` layout switch to **two columns on large devices** while keeping it **one column on smaller screens** — all with **inline styles** and without any libraries like Tailwind or Bootstrap.
+
+### ✅ Updated Two-Column Layout for Large Devices
+
+```jsx
+export default function Checkout() {
+  return (
+    <div
+      style={{
+        padding: "20px",
+        maxWidth: "1000px",
+        margin: "0 auto",
+        fontFamily: "sans-serif",
+      }}
+    >
+      <h1 style={{ marginBottom: "20px", textAlign: "center" }}>Checkout</h1>
+
+      {/* Container with responsive flex layout */}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: window.innerWidth >= 768 ? "row" : "column",
+          gap: "20px",
+        }}
+      >
+        {/* Billing Info */}
+        <div
+          style={{
+            flex: 1,
+            padding: "15px",
+            border: "1px solid #ccc",
+            borderRadius: "8px",
+          }}
+        >
+          <h2>Billing Information</h2>
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "10px" }}
+          >
+            <input type="text" placeholder="Full Name" style={inputStyle} />
+            <input type="email" placeholder="Email" style={inputStyle} />
+            <input type="text" placeholder="Address" style={inputStyle} />
+            <input type="text" placeholder="City" style={inputStyle} />
+            <input type="text" placeholder="Postal Code" style={inputStyle} />
+          </div>
+        </div>
+
+        {/* Order Summary */}
+        <div
+          style={{
+            flex: 1,
+            padding: "15px",
+            border: "1px solid #ccc",
+            borderRadius: "8px",
+          }}
+        >
+          <h2>Order Summary</h2>
+          <p>Product Name: Example Product</p>
+          <p>Quantity: 1</p>
+          <p>Total: ৳1000</p>
+        </div>
+      </div>
+
+      {/* Confirm Button */}
+      <button
+        style={{
+          marginTop: "20px",
+          padding: "10px 20px",
+          backgroundColor: "#28a745",
+          color: "#fff",
+          border: "none",
+          borderRadius: "4px",
+          cursor: "pointer",
+          width: "100%",
+        }}
+      >
+        Confirm Order
+      </button>
+    </div>
+  );
+}
+
+// Style for inputs (same on focus and blur)
+const inputStyle = {
+  padding: "8px",
+  border: "1px solid #ccc",
+  borderRadius: "4px",
+  outline: "none",
+};
+```
+
+---
+
+### 📱 Optional: Make it Automatically Responsive
+
+If you want **real-time responsive behavior** without refresh, you'd ideally use CSS Media Queries or Tailwind. But for plain inline styles, `window.innerWidth` is used here for demonstration. Let me know if you'd prefer a CSS or Tailwind version for proper responsiveness.
+
+Would you like a version with Tailwind CSS instead?

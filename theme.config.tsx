@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
 import { DocsThemeConfig, useConfig } from "nextra-theme-docs";
+import Donate from "./components/Donate";
 import Logo from "./components/Logo";
 
 const config: DocsThemeConfig = {
@@ -14,6 +15,10 @@ const config: DocsThemeConfig = {
     "https://github.com/codedbyMojnu/react-bangla-tutorial/blob/main",
   footer: {
     text: "React Bangla Tutorial",
+  },
+  // ✅ Add this block
+  components: {
+    Donate,
   },
   useNextSeoProps() {
     const { route } = useRouter();

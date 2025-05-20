@@ -1,56 +1,47 @@
-.courseContainer {
+.donateContainer {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: #f3f4f6;
-  padding: 1rem;
-}
-
-.courseCard {
-  border: 4px solid black;
-  border-radius: 1rem;
+  background-color: #f9fafb;
   padding: 1.5rem;
-  background-color: white;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.donateCard {
+  border: 3px solid #1f2937;
+  border-radius: 1rem;
+  padding: 2rem;
+  background-color: #ffffff;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
   text-align: center;
-  max-width: 32rem;
+  max-width: 34rem;
 }
 
-.courseTitle {
-  font-size: 1.5rem;
+.donateTitle {
+  font-size: 1.75rem;
   font-weight: bold;
-  color: #1f2937;
-  margin-bottom: 1rem;
+  color: #111827;
+  margin-bottom: 1.25rem;
 }
 
-.courseText {
+.donateText {
   color: #374151;
   font-size: 1.125rem;
   line-height: 1.75rem;
+  margin-bottom: 1rem;
 }
 
-.courseHighlight {
+.highlight {
   font-weight: bold;
+  color: #2563eb;
 }
 
 .greenText {
   color: #10b981;
+  font-weight: bold;
 }
 
-.blueText {
-  color: #3b82f6;
-}
-
-.redText {
-  color: #ef4444;
-}
-
-.purpleText {
-  color: #8b5cf6;
-}
-
-.courseButton {
+.donateButton {
   display: inline-block;
   background-color: #10b981;
   color: white;
@@ -64,6 +55,6 @@
   margin-top: 1.5rem;
 }
 
-.courseButton:hover {
+.donateButton:hover {
   background-color: #059669;
 }

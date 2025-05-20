@@ -1,0 +1,88 @@
+Great! You want the **white ball itself** (inside the toggle) to be **draggable left to right**, not the entire toggle background. Let's update the implementation so:
+
+- Only the **white ball is draggable**.
+- We detect **drag end position** of the white ball.
+- Based on the position (`e.clientX`), we turn the toggle **on/off**.
+
+---
+
+### ✅ Updated Working Version (with draggable white ball):
+
+```jsx
+// Toggle.js
+import React from "react";
+
+export default function Toggle({ isOn, onChange }) {
+  function isCloserToRightEdge(e) {
+    return e.clientX > window.innerWidth / 2;
+  }
+
+  function handleDragEnd(e) {
+    if (isCloserToRightEdge(e)) {
+      onChange(true);
+    } else {
+      onChange(false);
+    }
+  }
+
+  function handleClick() {
+    onChange(!isOn);
+  }
+
+  return (
+    <div
+      onClick={handleClick}
+      className={`w-24 h-12 flex items-center px-1 rounded-full cursor-pointer transition-colors duration-300
+        ${isOn ? "bg-green-500" : "bg-gray-400"}`}
+    >
+      <div
+        draggable
+        onDragEnd={handleDragEnd}
+        className={`w-10 h-10 rounded-full bg-white shadow-md transition-transform duration-300
+          ${isOn ? "translate-x-12" : "translate-x-0"}`}
+      />
+    </div>
+  );
+}
+```
+
+---
+
+### 🧪 How It Works
+
+| Interaction                            | What Happens                                                         |
+| -------------------------------------- | -------------------------------------------------------------------- |
+| User **clicks** anywhere on the toggle | `handleClick()` toggles `isOn`                                       |
+| User **drags the white ball**          | `handleDragEnd()` checks if it's closer to the right, updates `isOn` |
+| `translate-x-12`                       | Moves white ball right (inside a `w-24` parent)                      |
+| `translate-x-0`                        | Puts ball at the start (left)                                        |
+
+---
+
+### 📄 App.js (for testing)
+
+```jsx
+import React, { useState } from "react";
+import Toggle from "./Toggle";
+
+export default function App() {
+  const [flashOn, setFlashOn] = useState(false);
+
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center gap-6">
+      <Toggle isOn={flashOn} onChange={setFlashOn} />
+      <p className="text-xl font-bold">
+        Flashlight is {flashOn ? "ON 🔦" : "OFF 🌑"}
+      </p>
+    </div>
+  );
+}
+```
+
+---
+
+### ✅ Bonus Tip
+
+If you want smooth drag-and-drop experience (like tracking mouse movement while dragging), you can use `onDrag` with position logic — but this simple version covers your request well: **drag white ball, detect its position on drop, and update parent state**.
+
+Want me to enhance it with **mouse position tracking (while dragging)** like a slider? Let me know!

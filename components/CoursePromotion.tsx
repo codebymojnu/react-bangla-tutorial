@@ -16,7 +16,7 @@ const CoursePromotion: React.FC = () => {
         <p className={styles.courseText}>
           মাসিক{" "}
           <span className={styles.courseHighlight + " " + styles.greenText}>
-            ২৫০০ টাকা
+            ৫০০০ টাকা
           </span>{" "}
           নিব, সপ্তাহে <span className="courseHighlight blueText">৩ দিন</span>{" "}
           ক্লাস করাব।

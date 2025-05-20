@@ -1,0 +1,58 @@
+Here is a full list of **JavaScript array methods** categorized by whether they **modify (mutate)** the original array or **do not modify** it.
+
+---
+
+## 🟥 Methods That **Modify** the Original Array (Mutate)
+
+| Method                          | Description                                                                  |
+| ------------------------------- | ---------------------------------------------------------------------------- |
+| `push()`                        | Adds element(s) to the end                                                   |
+| `pop()`                         | Removes the last element                                                     |
+| `shift()`                       | Removes the first element                                                    |
+| `unshift()`                     | Adds element(s) to the beginning                                             |
+| `splice()`                      | Adds/removes/replaces element(s) anywhere                                    |
+| `sort()`                        | Sorts the array in place                                                     |
+| `reverse()`                     | Reverses the array in place                                                  |
+| `fill()`                        | Fills elements with a static value                                           |
+| `copyWithin()`                  | Copies part of the array within itself                                       |
+| `flat()` (in some cases)        | Flattens array in place (mutates in-place in older JS engines)               |
+| `Array.prototype[@@iterator]()` | May mutate during manual iteration if used with `.next()` and mutation logic |
+
+---
+
+## 🟩 Methods That **Do Not Modify** the Original Array (Non-Mutating)
+
+| Method          | Description                                      |
+| --------------- | ------------------------------------------------ |
+| `map()`         | Returns a new array after applying a function    |
+| `filter()`      | Returns a new array with matched values          |
+| `slice()`       | Returns a portion of the array (no mutation)     |
+| `concat()`      | Merges arrays and returns a new array            |
+| `includes()`    | Checks if a value exists                         |
+| `indexOf()`     | Returns the index of a value                     |
+| `lastIndexOf()` | Returns the last index of a value                |
+| `find()`        | Finds and returns the first matched element      |
+| `findIndex()`   | Finds and returns the index of first match       |
+| `some()`        | Returns true/false if **any** match              |
+| `every()`       | Returns true/false if **all** match              |
+| `forEach()`     | Executes function on each element (no return)    |
+| `join()`        | Joins array into a string                        |
+| `toString()`    | Converts array to string                         |
+| `entries()`     | Returns an iterator (no mutation)                |
+| `keys()`        | Returns an iterator of keys                      |
+| `values()`      | Returns an iterator of values                    |
+| `flatMap()`     | Maps and flattens in one go (returns new array)  |
+| `at()`          | Returns item at given index (supports negatives) |
+
+---
+
+## 📝 Summary Chart:
+
+| Method Category           | Examples                                   |
+| ------------------------- | ------------------------------------------ |
+| 🔧 **Mutates (Modifies)** | `push`, `pop`, `splice`, `sort`, `reverse` |
+| ✅ **Does NOT Mutate**    | `map`, `filter`, `find`, `some`, `every`   |
+
+---
+
+Let me know if you want this list as a downloadable cheat sheet (PDF or image)!

@@ -4,17 +4,9 @@
   "adding-interactivity": "UI এ ইন্টারেক্টিভিটি যোগ কর",
   "managing-state": "UI পরিবর্তনের জন্য স্টেট ম্যানেজ কর",
   "escape-hatches": "React এর বাইরে গিয়ে কাজ",
-  "interview-question": "ইন্টারভিউ প্রশ্নগুলো",
-  "bug-fixed-in-daily": "প্রতিদিনের বাগগুলো",
-  "fundamentals-of-javascript": "জাভাস্ক্রিপ্ট টিউটোরিয়াল",
-  "tailwind-css": "Tailwind CSS টিউটোরিয়াল",
-  "git-and-github": "গিট এবং গিটহাব টিউটোরিয়াল",
-  "problem-and-solution-helped-by-chatGPT": "প্রতিদিনের সমস্যাগুলো ও সমাধান",
-  "correct-sentences-grammer": "ইংরেজি চর্চা",
-  "lws-project": "লার্ন উইথ সুমিত- প্রোজেক্ট",
-  "lws-assignment": "লার্ন উইথ সুমিত- এসাইনমেন্ট",
-
-  "word-meaning-from-react-document": "React Document এর অজানা শব্দ",
+  "lws-project": "LWS- প্রোজেক্ট",
+  "lws-assignment": "LWS- এসাইনমেন্ট",
+  "Features": "রেডিমেট ফিচার রিয়েক্ট",
   "about": {
     "title": "প্লাটফর্ম সম্পর্কে",
     "type": "page"

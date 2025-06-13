@@ -1,0 +1,91 @@
+You've written a very good and mostly correct hook! ✅
+Now let’s break your questions one by one:
+
+---
+
+### 1️⃣ **Is this writing format ok?**
+
+👉 Yes — this format is perfectly fine and commonly used in React hooks.
+
+---
+
+### 2️⃣ **Can `async function` be written on top or outside and called from `useEffect`?**
+
+👉 Yes — exactly how you did it:
+
+```javascript
+async function fetchModel(ignore) { ... }
+
+useEffect(() => { ... fetchModel(ignore); ... }, []);
+```
+
+✅ This is valid.
+
+---
+
+### 3️⃣ **Is there any bug?**
+
+👉 You do **not have a real bug**, but one small improvement:
+
+#### Potential issue: _Stale closure or race condition_
+
+👉 You are passing `ignore` as an argument:
+
+```javascript
+fetchModel(ignore);
+```
+
+But since `fetchModel` is `async`, the `ignore` variable might change during the async process, especially if the component unmounts quickly.
+
+👉 A better way is to use a `let ignore = false` inside the effect and not pass it as an argument — but access it inside the function.
+
+✅ Example improved version:
+
+```javascript
+import { useEffect, useState } from "react";
+
+export default function useModel() {
+  const [models, setModels] = useState([]);
+
+  useEffect(() => {
+    let ignore = false;
+
+    async function fetchModel() {
+      try {
+        const response = await fetch("https://image.pollinations.ai/models");
+        if (!response.ok) {
+          console.log("Failed to Fetch Models");
+          return;
+        }
+        const data = await response.json();
+        if (!ignore) {
+          setModels(data);
+        }
+      } catch (error) {
+        console.log(error.message);
+      }
+    }
+
+    fetchModel();
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  return models;
+}
+```
+
+---
+
+### Summary:
+
+✅ Yes, writing format is OK.
+✅ You can write `async function` outside `useEffect` and call it inside.
+⚠️ Minor improvement: avoid passing `ignore` — better access `ignore` inside the async function (to avoid subtle bugs).
+✅ No major bugs.
+
+---
+
+If you want, I can also show an even _cleaner pattern_ using `AbortController` for fetch cancellation — very useful for real apps. Just say if you want to see it. 🚀

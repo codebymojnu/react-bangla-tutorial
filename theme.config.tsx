@@ -1,5 +1,5 @@
 import Script from "next/script";
-import { DocsThemeConfig } from "nextra-theme-docs";
+import { DocsThemeConfig, FrontMatter } from "nextra-theme-docs";
 import Donate from "./components/Donate";
 import Logo from "./components/Logo";
 
@@ -27,7 +27,8 @@ const config: DocsThemeConfig = {
     }
     return { titleTemplate: "React Bangla Tutorial" };
   },
-  head: ({ title, meta }) => {
+  head: (props: { title?: string; meta?: FrontMatter }) => {
+    const { title, meta } = props;
     const description =
       meta?.description ||
       "React Bangla Tutorial - স্টেপ বাই স্টেপ ফলো করে রিয়েক্ট শিখুন.";

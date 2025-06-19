@@ -1,5 +1,5 @@
-import { useRouter } from "next/router";
-import { DocsThemeConfig, useConfig } from "nextra-theme-docs";
+import Script from "next/script";
+import { DocsThemeConfig } from "nextra-theme-docs";
 import Donate from "./components/Donate";
 import Logo from "./components/Logo";
 
@@ -16,52 +16,54 @@ const config: DocsThemeConfig = {
   footer: {
     text: "React Bangla Tutorial",
   },
-  // ✅ Add this block
   components: {
     Donate,
   },
   useNextSeoProps() {
-    const { route } = useRouter();
-    if (route !== "/") {
+    if (typeof window !== "undefined" && window.location.pathname !== "/") {
       return {
         titleTemplate: "%s – React Bangla Tutorial",
       };
     }
     return { titleTemplate: "React Bangla Tutorial" };
   },
-  head: () => {
-    const { asPath } = useRouter();
-    const { route } = useRouter();
-    const { title, ...meta } = useConfig().frontMatter;
+  head: ({ title, meta }) => {
+    const description =
+      meta?.description ||
+      "React Bangla Tutorial - স্টেপ বাই স্টেপ ফলো করে রিয়েক্ট শিখুন.";
+    const url =
+      typeof window !== "undefined"
+        ? `https://react-bangla.vercel.app${window.location.pathname}`
+        : "https://react-bangla.vercel.app";
 
     return (
       <>
+        {/* Google Analytics */}
+        <Script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-BPHZNZ7C7E"
+        />
+        <Script id="google-analytics">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-BPHZNZ7C7E');
+          `}
+        </Script>
+
+        {/* SEO and Meta Tags */}
         <meta charSet="UTF-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-        <link rel="canonical" href="https://react-bangla.vercel.app" />
-        <meta
-          property="og:url"
-          content={`https://react-bangla.vercel.app${asPath}`}
-        />
-        <meta property="og:site_name" content="React Bangla Tutorial" />
-        <meta name="og:title" content="React Bangla Tutorial" />
-        <meta httpEquiv="Content-Language" content="bn" />
         <meta name="viewport" content="width=device-width" />
+        <meta httpEquiv="Content-Language" content="bn" />
         <meta name="keywords" content="React, Bangla, Tutorial" />
-        <meta
-          property="description"
-          content={
-            meta.description ||
-            "React Bangla Tutorial - স্টেপ বাই স্টেপ ফলো করে রিয়েক্ট শিখুন."
-          }
-        />
-        <meta
-          property="og:description"
-          content={
-            meta.description ||
-            "React Bangla Tutorial - স্টেপ বাই স্টেপ ফলো করে রিয়েক্ট শিখুন."
-          }
-        />
+        <link rel="canonical" href={url} />
+        <meta property="og:url" content={url} />
+        <meta property="og:site_name" content="React Bangla Tutorial" />
+        <meta name="og:title" content={title || "React Bangla Tutorial"} />
+        <meta name="description" content={description} />
+        <meta property="og:description" content={description} />
       </>
     );
   },

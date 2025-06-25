@@ -1,6 +1,4 @@
 {
-  "browser-dom-and-how-js-manupulating-the-dom": "পর্দার পেছনের খেলা: ব্রাউজার DOM এর সাথে JS যেভাবে খেলে!!",
-  "how-virtual-dom-works": "Virtual DOM-এর গতির রহস্য ফাঁস: UI আপডেটে বাজিমাত!",
   "first-component": "Component হলো App-এর বিল্ডিং ব্লক: চলো প্রথম কম্পোনেন্ট তৈরি করি",
   "importing-and-exporting-component": "কোড Reusability সিস্টেম: Import এবং Export এর খেল!",
   "writting-markup-with-jsx": "JSX দিয়ে Markup বানাও: Facebook টিমের নতুন ভাষায় সাজাও UI",

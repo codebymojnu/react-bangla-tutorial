@@ -1,4 +1,3 @@
-import Script from "next/script";
 import { DocsThemeConfig } from "nextra-theme-docs";
 import Donate from "./components/Donate";
 import Logo from "./components/Logo";
@@ -39,20 +38,6 @@ const config: DocsThemeConfig = {
 
     return (
       <>
-        {/* Google Analytics */}
-        <Script
-          async
-          src="https://www.googletagmanager.com/gtag/js?id=G-BPHZNZ7C7E"
-        />
-        <Script id="google-analytics">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-BPHZNZ7C7E');
-          `}
-        </Script>
-
         {/* SEO and Meta Tags */}
         <meta charSet="UTF-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />

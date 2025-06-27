@@ -1,32 +1,1013 @@
-## Updating Objects in State
+অবশ্যই\! আপনার দেওয়া ডকুমেন্টটি অনুসরণ করে, React state-এ অবজেক্ট আপডেট করার বিষয়টিকে সহজ ও প্রাঞ্জল ভাষায় একটি তিন পর্বের ব্লগ পোস্টে বিস্তারিতভাবে তুলে ধরছি। লেখাটি এমনভাবে সাজানো হয়েছে যেন মনে হয়, একজন সিনিয়র ডেভেলপার ভাই পাশে বসে আপনাকে বুঝিয়ে দিচ্ছেন।
 
-State can hold any kind of JavaScript value, including objects. But you shouldn’t change objects that you hold in the React state directly. Instead, when you want to update an object, you need to create a new one (or make a copy of an existing one), and then set the state to use that copy.
+-----
 
-## You will learn
+### **React State-এ Object Update করার সঠিক উপায় (পর্ব ১: Mutation কী এবং কেন তা এড়িয়ে চলবেন?)**
 
-1. How to correctly update an object in React state
-2. How to update a nested object without mutating it
-3. What immutability is, and how not to break it
-4. How to make object copying less repetitive with Immer
+হ্যালো ভাইয়া/আপু\! কেমন আছেন? আজকে আমরা React-এর একটা খুব গুরুত্বপূর্ণ বিষয় নিয়ে কথা বলব: State-এর মধ্যে থাকা অবজেক্ট (object) কীভাবে আপডেট করতে হয়।
 
-## What’s a mutation?
+আমরা যখন React-এ কাজ করি, `useState` হুক ব্যবহার করে বিভিন্ন ধরণের ডেটা আমাদের কম্পোনেন্টের মেমোরিতে ধরে রাখি। এই ডেটা হতে পারে নাম্বার, স্ট্রিং, বুলিয়ান, এমনকি অবজেক্ট বা অ্যারে।
 
-You can store any kind of JavaScript value in state.
+তবে, State-এ যখন কোনো অবজেক্ট থাকে, তখন সেটাকে সরাসরি পরিবর্তন করা বা আপডেট করা উচিত না। React-এর নিয়ম হলো, যখনই কোনো অবজেক্ট আপডেট করার দরকার পড়বে, আপনাকে একটি নতুন অবজেক্ট তৈরি করতে হবে (অথবা পুরোনোটার একটা কপি বানিয়ে নিতে হবে) এবং সেই নতুন কপিটা State-এ সেট করতে হবে।
 
+এই পর্বে আমরা শিখব:
+
+  * React state-এ অবজেক্ট সঠিকভাবে আপডেট করার নিয়ম।
+  * মিউটেশন (Mutation) কী এবং কেন এটা এড়িয়ে চলা উচিত।
+  * Immutability বা অপরিবর্তনীয়তার ধারণা।
+
+চলুন, শুরু করা যাক\!
+
+#### **মিউটেশন (Mutation) জিনিসটা কী?**
+
+আপনি State-এ যেকোনো জাভাস্ক্রিপ্ট ভ্যালু রাখতে পারেন। যেমন, আমরা এতদিন নাম্বার, স্ট্রিং বা বুলিয়ান ব্যবহার করে এসেছি।
+
+```javascript
 const [x, setX] = useState(0);
+```
 
-So far you’ve been working with numbers, strings, and booleans. These kinds of JavaScript values are “immutable”, meaning unchangeable or “read-only”. You can trigger a re-render to replace a value:
+এই ধরণের ভ্যালুগুলোকে বলা হয় "immutable" বা অপরিবর্তনীয়। অর্থাৎ, এদেরকে সরাসরি পরিবর্তন করা যায় না। আপনি যখন `setX(5)` কল করেন, তখন `x`-এর ভ্যালু `0` থেকে `5` হয়ে যায়, কিন্তু `0` সংখ্যাটি নিজে কিন্তু বদলায়নি। জাভাস্ক্রিপ্টে এই primitive ভ্যালুগুলোকে পরিবর্তন করা সম্ভব না।
 
-setX(5);
+এবার একটা অবজেক্টের কথা ভাবুন:
 
-The x state changed from 0 to 5, but the number 0 itself did not change. It’s not possible to make any changes to the built-in primitive values like numbers, strings, and booleans in JavaScript.
+```javascript
+const [position, setPosition] = useState({ x: 0, y: 0 });
+```
 
-Now consider an object in state:
+টেকনিক্যালি, আপনি কিন্তু চাইলে এই `position` অবজেক্টের ভেতরের ভ্যালু সরাসরি পরিবর্তন করতে পারেন। **এই সরাসরি পরিবর্তন করাকেই বলা হয় মিউটেশন (mutation)**।
 
-`const [position, setPosition] = useState({ x: 0, y: 0 });`
+```javascript
+position.x = 5; // এটা একটা মিউটেশন!
+```
 
-Technically, it is possible to change the contents of the object itself. This is called a mutation:
+কিন্তু React-এর দুনিয়ায়, State-এ থাকা অবজেক্টকে আপনার এমনভাবে ব্যবহার করতে হবে **যেন তারা immutable**—ঠিক যেমন নাম্বার বা স্ট্রিং। সরাসরি পরিবর্তন না করে, আপনাকে সবসময় পুরোনোটা বদলে নতুন একটা অবজেক্ট দিতে হবে।
 
-position.x = 5;
+#### **State-কে Read-only হিসেবে দেখুন**
 
-_However, although objects in React state are technically mutable, you should treat them as if they were immutable—like numbers, booleans, and strings. Instead of mutating them, you should always replace them._
+সহজ কথায়, **আপনি State-এ যে অবজেক্টই রাখবেন, সেটাকে শুধু পড়ার জন্য (read-only) বলে ধরে নেবেন।**
+
+চলুন একটা উদাহরণ দেখি। নিচের কোডে, স্ক্রিনে একটি লাল ডট আছে। আমরা চাই, মাউস নাড়ালে ডটটিও সাথে সাথে নড়বে। কিন্তু নিচের কোডটি চালানোর পর দেখবেন, ডটটি তার প্রাথমিক অবস্থানেই স্থির হয়ে আছে।
+
+
+```js
+import { useState } from 'react';
+
+export default function MovingDot() {
+  const [position, setPosition] = useState({
+    x: 0,
+    y: 0
+  });
+  return (
+    <div
+      onPointerMove={e => {
+        position.x = e.clientX;
+        position.y = e.clientY;
+      }}
+      style={{
+        position: 'relative',
+        width: '100vw',
+        height: '100vh',
+      }}>
+      <div style={{
+        position: 'absolute',
+        backgroundColor: 'red',
+        borderRadius: '50%',
+        transform: `translate(${position.x}px, ${position.y}px)`,
+        left: -10,
+        top: -10,
+        width: 20,
+        height: 20,
+      }} />
+    </div>
+  );
+}
+```
+
+```css
+body { margin: 0; padding: 0; height: 250px; }
+```
+
+
+
+সমস্যাটা হচ্ছে এই কোডে:
+
+```javascript
+onPointerMove={e => {
+  position.x = e.clientX;
+  position.y = e.clientY;
+}}
+```
+
+এই কোডটি `position` অবজেক্টকে সরাসরি মিউটেট বা পরিবর্তন করছে। কিন্তু State-এর `set` ফাংশন (`setPosition`) ব্যবহার না করায়, React বুঝতেই পারছে না যে অবজেক্টটি পরিবর্তন হয়েছে। তাই React কোনো কিছুই করছে না। ব্যাপারটা অনেকটা, রেস্টুরেন্টে খাবার খাওয়া শেষ করে মেন্যু কার্ড দেখে অর্ডার বদলানোর চেষ্টার মতো\!
+
+এই সমস্যার সমাধান করতে এবং কম্পোনেন্টকে রি-রেন্ডার করতে, **আপনাকে একটি *নতুন* অবজেক্ট তৈরি করতে হবে এবং সেটাকে `set` ফাংশনে পাস করতে হবে।**
+
+```javascript
+onPointerMove={e => {
+  setPosition({
+    x: e.clientX,
+    y: e.clientY
+  });
+}}
+```
+
+যখন আপনি `setPosition` ব্যবহার করছেন, আপনি React-কে বলছেন:
+
+  * `position`-কে এই নতুন অবজেক্টটি দিয়ে বদলে দাও।
+  * এবং এই কম্পোনেন্টটিকে আবার রেন্ডার করো।
+
+এখন দেখুন, লাল ডটটি আপনার মাউসের সাথে ঠিকই নড়াচড়া করছে\!
+
+
+
+```js
+import { useState } from 'react';
+
+export default function MovingDot() {
+  const [position, setPosition] = useState({
+    x: 0,
+    y: 0
+  });
+  return (
+    <div
+      onPointerMove={e => {
+        setPosition({
+          x: e.clientX,
+          y: e.clientY
+        });
+      }}
+      style={{
+        position: 'relative',
+        width: '100vw',
+        height: '100vh',
+      }}>
+      <div style={{
+        position: 'absolute',
+        backgroundColor: 'red',
+        borderRadius: '50%',
+        transform: `translate(${position.x}px, ${position.y}px)`,
+        left: -10,
+        top: -10,
+        width: 20,
+        height: 20,
+      }} />
+    </div>
+  );
+}
+```
+
+```css
+body { margin: 0; padding: 0; height: 250px; }
+```
+
+
+
+**একটা কথা: Local Mutation কিন্তু ঠিক আছে\!**
+
+> State-এ থাকা কোনো *পুরোনো* অবজেক্টকে পরিবর্তন করাটা সমস্যা। যেমন: `position.x = 5;`।
+কিন্তু আপনি যদি *মাত্রই তৈরি করা* কোনো নতুন অবজেক্ট পরিবর্তন করেন, সেটাতে কোনো সমস্যা নেই। যেমন, নিচের কোডটি একদম ঠিক আছে:
+
+```javascript
+const nextPosition = {};
+nextPosition.x = e.clientX;
+nextPosition.y = e.clientY;
+setPosition(nextPosition);
+```
+
+> কারণ `nextPosition` অবজেক্টটি এইমাত্র তৈরি হয়েছে এবং কোডের অন্য কোনো অংশ এখনো এটিকে ব্যবহার করছে না। তাই এটিকে পরিবর্তন করলে অন্য কোথাও কোনো অপ্রত্যাশিত প্রভাব পড়বে না। এটাকে বলে "Local Mutation"।
+
+#### **প্রথম পর্বের সারসংক্ষেপ**
+
+আজ আমরা শিখলাম যে, React state-এ থাকা কোনো অবজেক্টকে সরাসরি পরিবর্তন করা বা মিউটেট করা উচিত নয়। কারণ, এতে React বুঝতে পারে না যে state পরিবর্তন হয়েছে এবং UI আপডেট করে না। এর সঠিক উপায় হলো, পুরোনো অবজেক্টের বদলে একটি নতুন অবজেক্ট তৈরি করে state-setter ফাংশনের মাধ্যমে state আপডেট করা।
+
+পরের পর্বে আমরা দেখব কীভাবে একটি অবজেক্টের নির্দিষ্ট কিছু অংশ আপডেট করতে হয় এবং বাকি অংশগুলো অপরিবর্তিত রাখতে হয়। দেখা হবে পরের পর্বে\!
+
+-----
+
+### **React State-এ Object Update করার সঠিক উপায় (পর্ব ২: Spread Syntax দিয়ে Object Copy করা)**
+
+আগের পর্বে আপনাকে স্বাগতম\! আমরা শিখেছি যে React state-এ থাকা অবজেক্টকে সরাসরি পরিবর্তন (mutate) করা যাবে না, বরং সবসময় নতুন অবজেক্ট তৈরি করে state আপডেট করতে হবে।
+
+কিন্তু বেশিরভাগ সময় আমাদের পুরো অবজেক্টটা নতুন করে বানানোর দরকার হয় না। হয়তো একটা ফর্মের শুধু `firstName` ফিল্ডটি পরিবর্তন হয়েছে, কিন্তু `lastName` আর `email` আগের মতোই আছে। সেক্ষেত্রে আমরা কী করব?
+
+এই পর্বে আমরা শিখব:
+
+  * `spread` সিনট্যাক্স ব্যবহার করে কীভাবে অবজেক্টের কপি তৈরি করতে হয়।
+  * একটি নেস্টেড (nested) বা একটার ভেতর আরেকটা অবজেক্ট কীভাবে আপডেট করতে হয়।
+
+চলুন, এই চমৎকার কৌশলটি শিখে ফেলি\!
+
+#### **Spread Syntax (...) দিয়ে অবজেক্ট কপি করা**
+
+ধরুন, আমাদের কাছে একটি ফর্ম আছে যেখানে ব্যবহারকারীর নাম ও ইমেইল ইনপুট নেওয়া হয়। State-টা এমন:
+
+```javascript
+const [person, setPerson] = useState({
+  firstName: 'Barbara',
+  lastName: 'Hepworth',
+  email: 'bhepworth@sculpture.com'
+});
+```
+
+এখন, আমরা যদি `firstName` পরিবর্তন করার জন্য শুধু `firstName`-এর ভ্যালু দিয়ে `setPerson` কল করি, তাহলে `lastName` আর `email` হারিয়ে যাবে। আবার, যদি আমরা State-কে মিউটেট করি, তাহলে UI আপডেট হবে না।
+
+সঠিক উপায় হলো, একটি নতুন অবজেক্ট তৈরি করা, যেখানে পুরোনো সব ডেটা কপি করা হবে এবং শুধুমাত্র যে ফিল্ডটি পরিবর্তন হয়েছে, সেটির নতুন ভ্যালু থাকবে।
+
+ম্যানুয়ালি করতে গেলে কোডটা এমন দাঁড়াবে:
+
+```javascript
+setPerson({
+  firstName: e.target.value, // ইনপুট থেকে আসা নতুন নাম
+  lastName: person.lastName,  // পুরোনো ভ্যালু
+  email: person.email         // পুরোনো ভ্যালু
+});
+```
+
+এটা কাজ করবে, কিন্তু যদি অবজেক্টে অনেকগুলো প্রোপার্টি থাকে, তাহলে এটা বেশ কষ্টকর। এখানেই আমাদের সাহায্য করতে আসে জাভাস্ক্রিপ্টের `...` বা **object spread syntax**।
+
+Spread syntax ব্যবহার করে আপনি একটি অবজেক্টের সব প্রোপার্টি অন্য একটি অবজেক্টের মধ্যে কপি করে নিয়ে আসতে পারেন।
+
+```javascript
+setPerson({
+  ...person, // person অবজেক্টের পুরোনো সব ফিল্ড কপি করো
+  firstName: e.target.value // কিন্তু এই ফিল্ডটিকে নতুন ভ্যালু দিয়ে ওভাররাইট করো
+});
+```
+
+ব্যস\! এখন ফর্মটি ঠিকঠাক কাজ করবে। দেখুন কত সহজে এবং সুন্দরভাবে কাজটি হয়ে গেল\!
+
+
+```js
+import { useState } from 'react';
+
+export default function Form() {
+  const [person, setPerson] = useState({
+    firstName: 'Barbara',
+    lastName: 'Hepworth',
+    email: 'bhepworth@sculpture.com'
+  });
+
+  function handleFirstNameChange(e) {
+    setPerson({
+      ...person,
+      firstName: e.target.value
+    });
+  }
+
+  function handleLastNameChange(e) {
+    setPerson({
+      ...person,
+      lastName: e.target.value
+    });
+  }
+
+  function handleEmailChange(e) {
+    setPerson({
+      ...person,
+      email: e.target.value
+    });
+  }
+
+  return (
+    <>
+      <label>
+        First name:
+        <input
+          value={person.firstName}
+          onChange={handleFirstNameChange}
+        />
+      </label>
+      <label>
+        Last name:
+        <input
+          value={person.lastName}
+          onChange={handleLastNameChange}
+        />
+      </label>
+      <label>
+        Email:
+        <input
+          value={person.email}
+          onChange={handleEmailChange}
+        />
+      </label>
+      <p>
+        {person.firstName}{' '}
+        {person.lastName}{' '}
+        ({person.email})
+      </p>
+    </>
+  );
+}
+```
+
+```css
+label { display: block; }
+input { margin-left: 5px; margin-bottom: 5px; }
+```
+
+
+#### **বোনাস টিপস: একটি event handler দিয়ে অনেকগুলো ফিল্ড**
+
+> আপনি চাইলে একটি মাত্র `handleChange` ফাংশন দিয়ে ফর্মের সব ইনপুট কন্ট্রোল করতে পারেন। এর জন্য ইনপুট ফিল্ডে একটি `name` অ্যাট্রিবিউট যোগ করতে হবে এবং Computed Property Names `[e.target.name]` ব্যবহার করতে হবে।
+
+```javascript
+function handleChange(e) {
+  setPerson({
+    ...person,
+    [e.target.name]: e.target.value
+  });
+}
+```
+
+
+```jsx
+<input name="firstName" onChange={handleChange} />
+<input name="lastName" onChange={handleChange} />
+ ```
+
+#### **Nested Object আপডেট করা**
+
+অনেক সময় আমাদের state-এর গঠন বেশ জটিল বা nested হতে পারে। যেমন:
+
+```javascript
+const [person, setPerson] = useState({
+  name: 'Niki de Saint Phalle',
+  artwork: {
+    title: 'Blue Nana',
+    city: 'Hamburg',
+    image: 'https://i.imgur.com/Sd1AgUOm.jpg',
+  }
+});
+```
+
+এখানে `person` অবজেক্টের ভেতরে `artwork` নামে আরেকটি অবজেক্ট আছে। এখন যদি আমরা শুধু `artwork`-এর `city` পরিবর্তন করতে চাই, তাহলে কী করতে হবে?
+
+মনে রাখবেন, spread syntax (`...`) শুধু এক লেভেল গভীরে কপি করে (shallow copy)। তাই আপনাকে নেস্টিং-এর প্রতিটি লেভেলে কপি তৈরি করতে হবে।
+
+`city` পরিবর্তন করতে হলে আপনাকে প্রথমে `artwork` অবজেক্টের একটি নতুন কপি বানাতে হবে, এবং তারপর `person` অবজেক্টের একটি নতুন কপি বানাতে হবে, যা নতুন `artwork` কপিটিকে ব্যবহার করবে।
+
+কোডটি দেখতে এমন হবে:
+
+```javascript
+setPerson({
+  ...person, // পুরোনো person অবজেক্টের সব কপি করো
+  artwork: { // কিন্তু artwork প্রোপার্টিকে ওভাররাইট করো
+    ...person.artwork, // পুরোনো artwork অবজেক্টের সব কপি করে,
+    city: 'New Delhi' // শুধু city প্রোপার্টিকে নতুন ভ্যালু দাও
+  }
+});
+```
+
+এটা একটু বড় মনে হতে পারে, কিন্তু nested state আপডেটের জন্য এটাই সঠিক এবং নির্ভরযোগ্য উপায়।
+
+> **একটু 깊은 কথা: অবজেক্টগুলো আসলে Nested নয়\!**
+>
+> আমরা কোডে অবজেক্টকে "nested" বা একটার ভেতর আরেকটা হিসেবে দেখলেও, মেমোরিতে তারা আসলে সেভাবে থাকে না। উপরের উদাহরণে, `person` এবং `artwork` দুটি আলাদা অবজেক্ট। `person`-এর `artwork` প্রোপার্টিটি শুধু `artwork` অবজেক্টটিকে "পয়েন্ট" বা নির্দেশ করে। যদি অন্য কোনো অবজেক্টও একই `artwork`-কে নির্দেশ করে, এবং আপনি সেটাকে মিউটেট করেন, তাহলে দুটো জায়গাতেই পরিবর্তনটা দেখা যাবে, যা বড় ধরনের বাগ তৈরি করতে পারে। একারণেই কপি করে কাজ করাটা এত জরুরি।
+
+#### **দ্বিতীয় পর্বের সারসংক্ষেপ**
+
+এই পর্বে আমরা শিখলাম কীভাবে `...` spread syntax ব্যবহার করে একটি অবজেক্টের কপি তৈরি করতে হয় এবং তার নির্দিষ্ট কোনো প্রোপার্টি আপডেট করতে হয়। আমরা আরও শিখলাম যে nested অবজেক্ট আপডেট করার সময়, প্রতিটি লেভেলেই কপি তৈরি করতে হয়।
+
+তবে state যখন অনেক বেশি nested হয়ে যায়, তখন এই কপি করার কোড বেশ পুনরাবৃত্তিমূলক (repetitive) ও громоздкий মনে হতে পারে। পরের এবং শেষ পর্বে আমরা দেখব কীভাবে **Immer** নামে একটি লাইব্রেরি ব্যবহার করে এই কাজটি আরও সহজে করা যায় এবং আমরা জানব React কেন আমাদের এই immutability-র নিয়ম মানতে বলে।
+
+-----
+
+### **React State-এ Object Update করার সঠিক উপায় (পর্ব ৩: Immer এবং Immutability-র পেছনের কারণ)**
+
+আমাদের সিরিজের শেষ পর্বে আপনাকে স্বাগতম\! গত দুই পর্বে আমরা শিখেছি যে React state-এ থাকা অবজেক্টকে সরাসরি পরিবর্তন (mutate) না করে, spread syntax (`...`) ব্যবহার করে নতুন কপি তৈরি করতে হয়। আমরা দেখেছি যে state যখন nested হয়, তখন এই প্রক্রিয়াটি একটু громоздкий হয়ে যায়।
+
+এই পর্বে আমরা আলোচনা করব:
+
+  * **Immer** লাইব্রেরি ব্যবহার করে কীভাবে state আপডেট করার কোড আরও সহজ ও সংক্ষিপ্ত করা যায়।
+  * React কেন state মিউটেশন করতে নিষেধ করে—এর পেছনের মূল কারণগুলো কী কী।
+
+চলুন, আমাদের যাত্রা শেষ করা যাক\!
+
+#### **Immer দিয়ে আপডেট লজিককে সহজ করা**
+
+আপনার state যদি অনেক বেশি nested হয়, তাহলে বারবার `...` দিয়ে কপি করাটা বেশ ক্লান্তিকর মনে হতে পারে। এই সমস্যার একটি চমৎকার সমাধান হলো **Immer** নামে একটি জনপ্রিয় লাইব্রেরি।
+
+Immer আপনাকে এমনভাবে কোড লেখার সুযোগ দেয়, যা দেখতে মিউটেশন মনে হলেও, বাস্তবে এটি মিউটেশন করে না। Immer পর্দার আড়ালে আপনার জন্য অপরিবর্তনীয় (immutable) কপি তৈরির কাজটি করে দেয়।
+
+Immer ব্যবহার করলে, আমাদের আগের nested state আপডেটের কোডটি এমন সহজ হয়ে যাবে:
+
+```javascript
+import { useImmer } from 'use-immer';
+
+// ... ভিতরে
+
+function handleCityChange(e) {
+  updatePerson(draft => {
+    draft.artwork.city = e.target.value;
+  });
+}
+```
+
+দেখুন, কোডটি কত পরিষ্কার\! এখানে আপনি `draft` নামে একটি অবজেক্ট পাচ্ছেন, যেটিকে আপনি সরাসরি পরিবর্তন করতে পারছেন। Immer এই পরিবর্তনগুলো ট্র্যাক করে এবং আপনার হয়ে একটি নতুন state অবজেক্ট তৈরি করে দেয়।
+
+**Immer ব্যবহার করতে হলে:**
+
+1.  প্রথমে আপনার প্রজেক্টে `use-immer` ইনস্টল করুন: `npm install use-immer`
+2.  তারপর `useState`-এর বদলে `useImmer` ইম্পোর্ট করুন: `import { useImmer } from 'use-immer';`
+
+নিচের উদাহরণে পুরো ফর্মটি Immer ব্যবহার করে বানানো হয়েছে:
+
+
+
+```js
+import { useImmer } from 'use-immer';
+
+export default function Form() {
+  const [person, updatePerson] = useImmer({
+    name: 'Niki de Saint Phalle',
+    artwork: {
+      title: 'Blue Nana',
+      city: 'Hamburg',
+      image: 'https://i.imgur.com/Sd1AgUOm.jpg',
+    }
+  });
+
+  function handleNameChange(e) {
+    updatePerson(draft => {
+      draft.name = e.target.value;
+    });
+  }
+
+  function handleTitleChange(e) {
+    updatePerson(draft => {
+      draft.artwork.title = e.target.value;
+    });
+  }
+
+  function handleCityChange(e) {
+    updatePerson(draft => {
+      draft.artwork.city = e.target.value;
+    });
+  }
+
+  function handleImageChange(e) {
+    updatePerson(draft => {
+      draft.artwork.image = e.target.value;
+    });
+  }
+
+  return (
+    <>
+      <label>
+        Name:
+        <input
+          value={person.name}
+          onChange={handleNameChange}
+        />
+      </label>
+      <label>
+        Title:
+        <input
+          value={person.artwork.title}
+          onChange={handleTitleChange}
+        />
+      </label>
+      <label>
+        City:
+        <input
+          value={person.artwork.city}
+          onChange={handleCityChange}
+        />
+      </label>
+      <label>
+        Image:
+        <input
+          value={person.artwork.image}
+          onChange={handleImageChange}
+        />
+      </label>
+      <p>
+        <i>{person.artwork.title}</i>
+        {' by '}
+        {person.name}
+        <br />
+        (located in {person.artwork.city})
+      </p>
+      <img 
+        src={person.artwork.image} 
+        alt={person.artwork.title}
+      />
+    </>
+  );
+}
+```
+
+```json package.json
+{
+  "dependencies": {
+    "immer": "1.7.3",
+    "react": "latest",
+    "react-dom": "latest",
+    "react-scripts": "latest",
+    "use-immer": "0.5.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}
+```
+
+```css
+label { display: block; }
+input { margin-left: 5px; margin-bottom: 5px; }
+img { width: 200px; height: 200px; }
+```
+
+
+Immer state-কে সহজ রাখে, বিশেষ করে যখন state nested হয় এবং বারবার অবজেক্ট কপি করতে হয়।
+
+#### **React-এ State মিউটেশন কেন ঠিক না?**
+
+এখন সবচেয়ে গুরুত্বপূর্ণ প্রশ্ন: React কেন আমাদের state মিউটেশন করতে এত কঠোরভাবে নিষেধ করে? এর পেছনে কয়েকটি শক্ত কারণ আছে:
+
+  * **ডিবাগিং (Debugging):** আপনি যখন state মিউটেট করেন না, তখন প্রতিটি রেন্ডারে state-এর একটি আলাদা "স্ন্যাপশট" তৈরি হয়। `console.log` করলে আপনি প্রতিটি ধাপে state-এর অবস্থা পরিষ্কারভাবে দেখতে পারবেন, যা ডিবাগিংকে অনেক সহজ করে তোলে।
+  * **পারফরম্যান্স অপটিমাইজেশন (Optimizations):** React অনেক সময় অপ্রয়োজনীয় রি-রেন্ডার এড়িয়ে চলে পারফরম্যান্স বাড়ায়। এটি করার জন্য React পুরোনো state বা props-এর সাথে নতুন state বা props-এর তুলনা করে। Immutability-র কারণে, React শুধু অবজেক্টের রেফারেন্স (`prevObj === obj`) চেক করেই দ্রুত বুঝে ফেলতে পারে কোনো পরিবর্তন হয়েছে কি না। মিউটেশন করলে এই অপটিমাইজেশন সম্ভব হতো না।
+  * **নতুন ফিচার (New Features):** React টিম প্রতিনিয়ত নতুন ফিচার নিয়ে কাজ করছে, যেগুলো state-কে স্ন্যাপশট হিসেবে গণ্য করার নীতির ওপর নির্ভরশীল। আপনি যদি মিউটেশনের অভ্যাস করেন, তাহলে ভবিষ্যতে এই নতুন ফিচারগুলো ব্যবহার করতে সমস্যায় পড়তে পারেন।
+  * **সহজUndo/Redo:** আপনার অ্যাপ্লিকেশনে যদি Undo/Redo, পরিবর্তনের ইতিহাস দেখানো, বা ফর্ম রিসেট করার মতো ফিচার যোগ করতে চান, তাহলে immutability আপনার জীবনকে অনেক সহজ করে দেবে। কারণ আপনি state-এর পুরোনো কপিগুলো মেমোরিতে রেখে দিতে পারেন এবং প্রয়োজন মতো ব্যবহার করতে পারেন।
+  * **সহজ আর্কিটেকচার (Simpler Implementation):** যেহেতু React মিউটেশনের ওপর নির্ভর করে না, তাই তাকে অবজেক্টগুলোকে ট্র্যাক করার জন্য কোনো বিশেষ ব্যবস্থা নিতে হয় না। একারণেই React এত দ্রুত এবং যেকোনো আকারের অবজেক্ট state-এ রাখা যায় কোনো বাড়তি ঝামেলা ছাড়াই।
+
+#### **পুরো আলোচনার সারসংক্ষেপ**
+
+  * React-এর সব state-কে immutable বা অপরিবর্তনীয় হিসেবে গণ্য করুন।
+  * State-এ থাকা অবজেক্টকে সরাসরি মিউটেট করলে React রি-রেন্ডার ট্রিগার করে না।
+  * একটি অবজেক্ট আপডেট করার জন্য সেটির একটি নতুন ভার্সন তৈরি করুন এবং state-setter ফাংশন দিয়ে সেট করুন।
+  * অবজেক্টের কপি তৈরির জন্য `{...obj, property: 'newValue'}` spread syntax ব্যবহার করুন।
+  * Spread syntax শুধু এক লেভেল গভীরে কপি করে (shallow copy)।
+  * Nested অবজেক্ট আপডেট করার জন্য, আপনাকে আপডেটের পথ ধরে প্রতিটি লেভেলে কপি তৈরি করতে হবে।
+  * বারবার কপি করার কোড কমানোর জন্য **Immer** ব্যবহার করতে পারেন।
+
+আশা করি, এই তিনটি পর্বের মাধ্যমে আপনি React state-এ অবজেক্ট আপডেট করার বিষয়টি ভালোভাবে বুঝতে পেরেছেন। এখন আপনার জন্য কিছু চ্যালেঞ্জ\!
+
+-----
+
+#### **আপনার জন্য চ্যালেঞ্জ**
+
+**চ্যালেঞ্জ ১: ভুল state আপডেট ঠিক করুন**
+
+এই ফর্মে কিছু বাগ আছে। `+1` বাটনে কয়েকবার ক্লিক করুন। দেখবেন, স্কোর বাড়ছে না। তারপর, first name পরিবর্তন করুন এবং দেখুন, স্কোর হঠাৎ করে বেড়ে গেছে। সবশেষে, last name পরিবর্তন করুন, দেখবেন স্কোর পুরোপুরি হারিয়ে গেছে।
+
+আপনার কাজ হলো এই সবগুলো বাগ ঠিক করা এবং প্রতিটি বাগ কেন হচ্ছিল তা ব্যাখ্যা করা।
+
+
+```js
+import { useState } from 'react';
+
+export default function Scoreboard() {
+  const [player, setPlayer] = useState({
+    firstName: 'Ranjani',
+    lastName: 'Shettar',
+    score: 10,
+  });
+
+  function handlePlusClick() {
+    player.score++;
+  }
+
+  function handleFirstNameChange(e) {
+    setPlayer({
+      ...player,
+      firstName: e.target.value,
+    });
+  }
+
+  function handleLastNameChange(e) {
+    setPlayer({
+      lastName: e.target.value
+    });
+  }
+
+  return (
+    <>
+      <label>
+        Score: <b>{player.score}</b>
+        {' '}
+        <button onClick={handlePlusClick}>
+          +1
+        </button>
+      </label>
+      <label>
+        First name:
+        <input
+          value={player.firstName}
+          onChange={handleFirstNameChange}
+        />
+      </label>
+      <label>
+        Last name:
+        <input
+          value={player.lastName}
+          onChange={handleLastNameChange}
+        />
+      </label>
+    </>
+  );
+}
+```
+
+```css
+label { display: block; margin-bottom: 10px; }
+input { margin-left: 5px; margin-bottom: 5px; }
+```
+
+
+বাগগুলো ঠিক করার পর কোডটি এমন দেখাবে:
+
+
+
+```js
+import { useState } from 'react';
+
+export default function Scoreboard() {
+  const [player, setPlayer] = useState({
+    firstName: 'Ranjani',
+    lastName: 'Shettar',
+    score: 10,
+  });
+
+  function handlePlusClick() {
+    setPlayer({
+      ...player,
+      score: player.score + 1,
+    });
+  }
+
+  function handleFirstNameChange(e) {
+    setPlayer({
+      ...player,
+      firstName: e.target.value,
+    });
+  }
+
+  function handleLastNameChange(e) {
+    setPlayer({
+      ...player,
+      lastName: e.target.value
+    });
+  }
+
+  return (
+    <>
+      <label>
+        Score: <b>{player.score}</b>
+        {' '}
+        <button onClick={handlePlusClick}>
+          +1
+        </button>
+      </label>
+      <label>
+        First name:
+        <input
+          value={player.firstName}
+          onChange={handleFirstNameChange}
+        />
+      </label>
+      <label>
+        Last name:
+        <input
+          value={player.lastName}
+          onChange={handleLastNameChange}
+        />
+      </label>
+    </>
+  );
+}
+```
+
+```css
+label { display: block; }
+input { margin-left: 5px; margin-bottom: 5px; }
+```
+
+
+`handlePlusClick`-এর সমস্যা ছিল যে এটি `player` অবজেক্টকে সরাসরি মিউটেট করছিল (`player.score++`)। ফলে, React বুঝতেই পারছিল না যে UI আপডেট করতে হবে। একারণেই যখন first name পরিবর্তন করা হচ্ছিল, তখন state আপডেট হওয়ায় স্কোরটিও স্ক্রিনে আপডেট হয়ে যাচ্ছিল।
+
+`handleLastNameChange`-এর সমস্যা ছিল যে এটি নতুন অবজেক্টে পুরোনো `...player` ফিল্ডগুলো কপি করছিল না। একারণেই last name পরিবর্তন করার পর স্কোরসহ বাকি সব ডেটা হারিয়ে যাচ্ছিল।
+
+
+
+-----
+
+**চ্যালেঞ্জ ২: মিউটেশন খুঁজে বের করে ঠিক করুন**
+
+এখানে একটি স্থির ব্যাকগ্রাউন্ডের ওপর একটি draggable বক্স আছে। আপনি সিলেক্ট ইনপুট ব্যবহার করে বক্সের রঙ পরিবর্তন করতে পারেন।
+
+কিন্তু একটি বাগ আছে। যদি আপনি প্রথমে বক্সটি সরান এবং তারপরে রঙ পরিবর্তন করেন, তাহলে ব্যাকগ্রাউন্ডটিও (যেটি নড়াচড়া করার কথা নয়\!) বক্সের অবস্থানে চলে আসবে। কিন্তু `Background` কম্পোনেন্টের `position` prop তো `{ x: 0, y: 0 }` সেট করা আছে। তাহলে রঙ পরিবর্তনের পর ব্যাকগ্রাউন্ড কেন সরে যাচ্ছে?
+
+বাগটি খুঁজে বের করে ঠিক করুন।
+
+
+
+যখনই কোনো অপ্রত্যাশিত পরিবর্তন দেখবেন, বুঝবেন কোথাও মিউটেশন হচ্ছে। `App.js`-এ মিউটেশনটি খুঁজে বের করে ঠিক করুন।
+
+
+
+```js src/App.js
+import { useState } from 'react';
+import Background from './Background.js';
+import Box from './Box.js';
+
+const initialPosition = {
+  x: 0,
+  y: 0
+};
+
+export default function Canvas() {
+  const [shape, setShape] = useState({
+    color: 'orange',
+    position: initialPosition
+  });
+
+  function handleMove(dx, dy) {
+    shape.position.x += dx;
+    shape.position.y += dy;
+  }
+
+  function handleColorChange(e) {
+    setShape({
+      ...shape,
+      color: e.target.value
+    });
+  }
+
+  return (
+    <>
+      <select
+        value={shape.color}
+        onChange={handleColorChange}
+      >
+        <option value="orange">orange</option>
+        <option value="lightpink">lightpink</option>
+        <option value="aliceblue">aliceblue</option>
+      </select>
+      <Background
+        position={initialPosition}
+      />
+      <Box
+        color={shape.color}
+        position={shape.position}
+        onMove={handleMove}
+      >
+        Drag me!
+      </Box>
+    </>
+  );
+}
+```
+
+```js src/Box.js
+import { useState } from 'react';
+
+export default function Box({
+  children,
+  color,
+  position,
+  onMove
+}) {
+  const [
+    lastCoordinates,
+    setLastCoordinates
+  ] = useState(null);
+
+  function handlePointerDown(e) {
+    e.target.setPointerCapture(e.pointerId);
+    setLastCoordinates({
+      x: e.clientX,
+      y: e.clientY,
+    });
+  }
+
+  function handlePointerMove(e) {
+    if (lastCoordinates) {
+      setLastCoordinates({
+        x: e.clientX,
+        y: e.clientY,
+      });
+      const dx = e.clientX - lastCoordinates.x;
+      const dy = e.clientY - lastCoordinates.y;
+      onMove(dx, dy);
+    }
+  }
+
+  function handlePointerUp(e) {
+    setLastCoordinates(null);
+  }
+
+  return (
+    <div
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      style={{
+        width: 100,
+        height: 100,
+        cursor: 'grab',
+        backgroundColor: color,
+        position: 'absolute',
+        border: '1px solid black',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        transform: `translate(
+          ${position.x}px,
+          ${position.y}px
+        )`,
+      }}
+    >{children}</div>
+  );
+}
+```
+
+```js src/Background.js
+export default function Background({
+  position
+}) {
+  return (
+    <div style={{
+      position: 'absolute',
+      transform: `translate(
+        ${position.x}px,
+        ${position.y}px
+      )`,
+      width: 250,
+      height: 250,
+      backgroundColor: 'rgba(200, 200, 0, 0.2)',
+    }} />
+  );
+};
+```
+
+```css
+body { height: 280px; }
+select { margin-bottom: 10px; }
+```
+
+
+
+সমস্যাটি ছিল `handleMove` ফাংশনের ভেতরের মিউটেশন। এটি সরাসরি `shape.position`-কে পরিবর্তন করছিল। কিন্তু `shape.position` এবং `initialPosition` দুটোই একই অবজেক্টকে নির্দেশ করছিল। একারণেই যখন বক্স সরানো হচ্ছিল, তখন `initialPosition` অবজেক্টটিও পরিবর্তিত হয়ে যাচ্ছিল, যা ব্যাকগ্রাউন্ডকেও সরিয়ে দিচ্ছিল।
+
+এর সমাধান হলো `handleMove` ফাংশন থেকে মিউটেশন বাদ দেওয়া এবং state আপডেটের জন্য একটি নতুন অবজেক্ট তৈরি করা। মনে রাখবেন, `+=` একটি মিউটেশন, তাই এটিকে সাধারণ `+` অপারেশন দিয়ে লিখতে হবে।
+
+
+
+```js src/App.js
+import { useState } from 'react';
+import Background from './Background.js';
+import Box from './Box.js';
+
+const initialPosition = {
+  x: 0,
+  y: 0
+};
+
+export default function Canvas() {
+  const [shape, setShape] = useState({
+    color: 'orange',
+    position: initialPosition
+  });
+
+  function handleMove(dx, dy) {
+    setShape({
+      ...shape,
+      position: {
+        x: shape.position.x + dx,
+        y: shape.position.y + dy,
+      }
+    });
+  }
+
+  function handleColorChange(e) {
+    setShape({
+      ...shape,
+      color: e.target.value
+    });
+  }
+
+  return (
+    <>
+      <select
+        value={shape.color}
+        onChange={handleColorChange}
+      >
+        <option value="orange">orange</option>
+        <option value="lightpink">lightpink</option>
+        <option value="aliceblue">aliceblue</option>
+      </select>
+      <Background
+        position={initialPosition}
+      />
+      <Box
+        color={shape.color}
+        position={shape.position}
+        onMove={handleMove}
+      >
+        Drag me!
+      </Box>
+    </>
+  );
+}
+```
+
+```js src/Box.js
+import { useState } from 'react';
+
+export default function Box({
+  children,
+  color,
+  position,
+  onMove
+}) {
+  const [
+    lastCoordinates,
+    setLastCoordinates
+  ] = useState(null);
+
+  function handlePointerDown(e) {
+    e.target.setPointerCapture(e.pointerId);
+    setLastCoordinates({
+      x: e.clientX,
+      y: e.clientY,
+    });
+  }
+
+  function handlePointerMove(e) {
+    if (lastCoordinates) {
+      setLastCoordinates({
+        x: e.clientX,
+        y: e.clientY,
+      });
+      const dx = e.clientX - lastCoordinates.x;
+      const dy = e.clientY - lastCoordinates.y;
+      onMove(dx, dy);
+    }
+  }
+
+  function handlePointerUp(e) {
+    setLastCoordinates(null);
+  }
+
+  return (
+    <div
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      style={{
+        width: 100,
+        height: 100,
+        cursor: 'grab',
+        backgroundColor: color,
+        position: 'absolute',
+        border: '1px solid black',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        transform: `translate(
+          ${position.x}px,
+          ${position.y}px
+        )`,
+      }}
+    >{children}</div>
+  );
+}
+```
+
+```js src/Background.js
+export default function Background({
+  position
+}) {
+  return (
+    <div style={{
+      position: 'absolute',
+      transform: `translate(
+        ${position.x}px,
+        ${position.y}px
+      )`,
+      width: 250,
+      height: 250,
+      backgroundColor: 'rgba(200, 200, 0, 0.2)',
+    }} />
+  );
+};
+```
+
+```css
+body { height: 280px; }
+select { margin-bottom: 10px; }
+```
+
+## বাকি টুকু পড়ে React অফিশিয়াল ডকুমেন্টেশন ফলো করে লিখতে হবে
+
+
+
+
+
+
+
